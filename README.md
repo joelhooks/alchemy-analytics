@@ -197,7 +197,7 @@ The body schema's encoded form must be JSON. A property test round-trips a gener
 
 Request capture records the method, path, status, duration, `Accept`, response content type, whether a `signature-agent` header was present, the referrer's origin and path, the user agent, coarse `request.cf` geography and a salted IP hash.
 
-Paths are captured with id-like segments redacted by default. `redactIdSegments` replaces each segment that looks like an email with `:email`. It replaces each UUID, each segment with a run of 4 or more digits, and each high-entropy token with `:id`. A token here means 16 or more characters that are all hex, or mostly base64url with both letters and digits and few separators. The same redaction applies to the referrer path. So `/reset/3f9c0a6e1b2d4c5e8f7a` becomes `/reset/:id`, and `/users/ada@example.com/orders/40213` becomes `/users/:email/orders/:id`.
+Paths are captured with id-like segments redacted by default. `redactIdSegments` replaces each segment that looks like an email with `:email`. It replaces each UUID, each segment with a run of 4 or more digits, and each high-entropy token with `:id`. A token here means 16 or more characters that are all hex, or mostly base64url with both letters and digits and few separators. The same redaction applies to the referrer path. So `/reset/3f9c0a6e1b2d4c5e8f7a` becomes `/reset/:id`, and `/accounts/ada@example.com/orders/40213` becomes `/accounts/:email/orders/:id`.
 
 Readable slugs such as `/blog/how-to-use-effect` pass through, but redaction is a heuristic. If your routes carry other secrets, pass your own rule. You can also compose with the default:
 
