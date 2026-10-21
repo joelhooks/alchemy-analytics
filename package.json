@@ -1,0 +1,73 @@
+{
+  "name": "alchemy-analytics",
+  "version": "0.0.0",
+  "description": "Capture-first, privacy-first request analytics for Alchemy and Effect",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "PROVENANCE.md",
+    "LICENSE",
+    "docs"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./basin": {
+      "types": "./dist/basin.d.ts",
+      "import": "./dist/basin.js"
+    },
+    "./ingest": {
+      "types": "./dist/ingest.d.ts",
+      "import": "./dist/ingest.js"
+    },
+    "./memory": {
+      "types": "./dist/memory.d.ts",
+      "import": "./dist/memory.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    }
+  },
+  "scripts": {
+    "build": "effect-tsgo patch && tsc -p tsconfig.build.json",
+    "prepare": "pnpm run build",
+    "typecheck": "pnpm build && tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.consumer.json",
+    "format": "oxfmt --write src test *.ts *.json AGENTS.md README.md PROVENANCE.md docs pnpm-workspace.yaml",
+    "lint": "oxfmt --check src test *.ts *.json AGENTS.md README.md PROVENANCE.md docs pnpm-workspace.yaml && oxlint --type-aware",
+    "check": "pnpm typecheck && pnpm lint",
+    "test": "pnpm build && vitest run"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261019.1",
+    "@effect/platform-node": "4.0.0",
+    "@effect/tsgo": "0.54.0",
+    "@effect/vitest": "4.0.0",
+    "@types/node": "24.19.2",
+    "alchemy": "2.0.0-beta.83",
+    "effect": "4.0.0",
+    "oxfmt": "0.73.0",
+    "oxlint": "1.88.0",
+    "oxlint-tsgolint": "7.0.2004",
+    "typescript": "7.0.2",
+    "ultracite": "8.0.1",
+    "vitest": "5.0.5"
+  },
+  "peerDependencies": {
+    "alchemy": "2.0.0-beta.83",
+    "effect": "4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "alchemy": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=24.18.0"
+  },
+  "packageManager": "pnpm@11.3.0"
+}
