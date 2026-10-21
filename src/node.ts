@@ -49,11 +49,11 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
     EventSink,
     Effect.gen(function* buildNodeEventSink() {
       if (!isSafeIngestUrl(options.url)) {
-        return yield* Effect.die(
-          new Error(
-            "NodeEventSink refused its url: the bearer secret would travel in clear. Use an https:// ingest url, or http:// only for localhost, 127.0.0.1 or [::1].",
-          ),
+        yield* Effect.logWarning(
+          "NodeEventSink refused its url and will send nothing: the bearer secret would travel in clear. Use an https:// ingest url, or http:// only for localhost, 127.0.0.1 or [::1].",
         );
+
+        return { send: () => Effect.void };
       }
 
       const client = HttpClient.filterStatusOk(yield* HttpClient.HttpClient);
@@ -131,7 +131,7 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
       );
 
       return {
-        send: (events) =>
+        send: (events: readonly RawEvent[]) =>
           Ref.get(closed).pipe(
             Effect.flatMap((isClosed) =>
               isClosed

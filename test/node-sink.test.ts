@@ -297,29 +297,39 @@ describe("node event sink", () => {
   );
 
   it.effect.prop(
-    "the sink refuses any url that would send the secret in clear",
+    "a url that would send the secret in clear degrades to a logged no-op, never a failure",
     {
+      events: Arbitrary.array(rawEvent, { maxLength: 3, minLength: 1 }),
       host: Arbitrary.schema(
         Schema.Literals(["app.example.test", "localhost", "127.0.0.1", "[::1]"]),
       ),
       scheme: Arbitrary.schema(Schema.Literals(["https", "http", "ws", "ftp"])),
     },
-    ({ host, scheme }) =>
+    ({ events, host, scheme }) =>
       Effect.gen(function* refuseClearText() {
         const posted = yield* Ref.make<readonly Posted[]>([]);
+        const logs: string[] = [];
         const url = `${scheme}://${host}/_analytics/ingest`;
 
         const exit = yield* Effect.exit(
-          Effect.scoped(
-            Layer.build(
-              nodeEventSink(options({ url })).pipe(Layer.provide(recordingClient(posted))),
+          sendAll([events]).pipe(
+            Effect.provide(
+              nodeEventSink(options({ url })).pipe(
+                Layer.provide(recordingClient(posted)),
+                Layer.provideMerge(
+                  Logger.layer([Logger.make((log) => logs.push(String(log.message)))]),
+                ),
+              ),
             ),
           ),
         );
 
         const safe = scheme === "https" || (scheme === "http" && host !== "app.example.test");
+        const sent = (yield* Ref.get(posted)).flatMap((request) => request.events);
 
-        expect(Exit.isSuccess(exit)).toBe(safe);
+        expect(Exit.isSuccess(exit)).toBe(true);
+        expect(sent).toHaveLength(safe ? events.length : 0);
+        expect(logs.filter((line) => line.includes("refused its url"))).toHaveLength(safe ? 0 : 1);
       }),
   );
 
