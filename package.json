@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Capture-first, privacy-first request analytics for Alchemy and Effect",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joelhooks/alchemy-analytics.git"
+  },
   "files": [
     "dist",
     "README.md",
@@ -11,6 +15,7 @@
     "docs"
   ],
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
