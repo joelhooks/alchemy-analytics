@@ -43,13 +43,13 @@ const IdKindSchema = Schema.Literals(["email", "uuid", "digits", "token", "hex"]
 
 const idValue = {
   digits: Arbitrary.schema(
-    Schema.Int.check(Schema.isBetween({ maximum: 99_999_999, minimum: 1000 })),
+    Schema.Int.check(Schema.isBetween({ maximum: 99_999_999, minimum: 10_000 })),
   ).pipe(Arbitrary.map(String)),
   email: secret.pipe(Arbitrary.map((local) => `${local}@mail.example.test`)),
   hex: Arbitrary.array(hexDigit, { maxLength: 40, minLength: 16 }).pipe(
     Arbitrary.map((digits) => digits.join("")),
   ),
-  token: secret.pipe(Arbitrary.map((value) => `${value}9`)),
+  token: secret.pipe(Arbitrary.map((value) => `Zq${value.slice(2)}9`)),
   uuid: Arbitrary.schema(Schema.String.check(Schema.isUUID())),
 };
 

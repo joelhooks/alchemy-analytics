@@ -197,16 +197,25 @@ The body schema's encoded form must be JSON. A property test round-trips a gener
 
 Request capture records the method, path, status, duration, `Accept`, response content type, whether a `signature-agent` header was present, the referrer's origin and path, the user agent, coarse `request.cf` geography and a salted IP hash.
 
-Paths are captured with id-like segments redacted by default. `redactIdSegments` replaces each segment that looks like an email with `:email`. It replaces each UUID, each segment with a run of 4 or more digits, and each high-entropy token with `:id`. A token here means 16 or more characters that are all hex, or mostly base64url with both letters and digits and few separators. The same redaction applies to the referrer path. So `/reset/3f9c0a6e1b2d4c5e8f7a` becomes `/reset/:id`, and `/accounts/ada@example.com/orders/40213` becomes `/accounts/:email/orders/:id`.
+Paths are captured with id-like segments redacted by default. `redactIdSegments` checks each segment:
 
-Readable slugs such as `/blog/how-to-use-effect` pass through, but redaction is a heuristic. If your routes carry other secrets, pass your own rule. You can also compose with the default:
+- An email becomes `:email`.
+- A UUID becomes `:id`.
+- A segment of 4 or more digits and nothing else becomes `:id`. Years from 1900 to 2099 pass through.
+- A high-entropy token becomes `:id`. That is 16 or more characters, no file extension, and either all hex, or mostly base64url with few separators, a digit, and either mixed case or at least a fifth digits.
+
+So `/reset/3f9c0a6e1b2d4c5e8f7a` becomes `/reset/:id`, `/accounts/ada@example.com/orders/40213` becomes `/accounts/:email/orders/:id`, and `/orders/1234567` becomes `/orders/:id`. The same redaction applies to the referrer path.
+
+Dated, versioned and file-name segments pass through: `/blog/2026/10/21/post`, `/2026-10-hello-world`, `/changelog/2026-q3`, `/docs/es2015`, `/css/main.1234.css`, `/img/hero-1920x1080.png`, `/releases/v1.2.3456`. So do readable slugs such as `/blog/how-to-use-effect`.
+
+Short numeric ids such as `/members/123` or `/api/v1/members/42` are not redacted. If those identify people in your app, pass your own rule. Redaction is a heuristic, so do the same for any route that carries other secrets. You can compose with the default:
 
 ```ts
 import { redactIdSegments, withEventCapture } from "alchemy-analytics";
 
 withEventCapture({
   identityMode: "daily",
-  redactPath: (path) => redactIdSegments(path).replace(/^\/invite\/[^/]+/u, "/invite/:code"),
+  redactPath: (path) => redactIdSegments(path).replace(/^\/members\/\d+/u, "/members/:id"),
   runInBackground: inBackground,
 });
 ```

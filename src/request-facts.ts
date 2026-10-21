@@ -37,7 +37,11 @@ const EMAIL = /^[^\s@/]+@[^\s@/]+\.[^\s@/]+$/u;
 
 const UUID = /^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu;
 
-const DIGIT_RUN = /\d{4}/u;
+const NUMERIC_ID = /^\d{4,}$/u;
+
+const YEAR = /^(?:19|20)\d{2}$/u;
+
+const FILE_EXTENSION = /\.[\da-z]{1,5}$/iu;
 
 const HEX = /^[\da-f]+$/iu;
 
@@ -45,18 +49,27 @@ const BASE64URL_CHARACTERS = /[\w=-]/gu;
 
 const SEPARATORS = /[_-]/gu;
 
+const DIGITS = /\d/gu;
+
 const TOKEN_MIN_LENGTH = 16;
 
 const share = (segment: string, characters: RegExp) =>
   (segment.length - segment.replaceAll(characters, "").length) / segment.length;
 
+const isNumericId = (segment: string) => NUMERIC_ID.test(segment) && !YEAR.test(segment);
+
+/**
+ * Long, separator-light and random-looking: all hex, or base64url with a digit and
+ * either mixed case or at least a fifth digits. File names are never tokens.
+ */
 const isToken = (segment: string) =>
   segment.length >= TOKEN_MIN_LENGTH &&
+  !FILE_EXTENSION.test(segment) &&
   (HEX.test(segment) ||
     (share(segment, BASE64URL_CHARACTERS) >= 0.9 &&
       share(segment, SEPARATORS) <= 0.1 &&
       /\d/u.test(segment) &&
-      /[a-z]/iu.test(segment)));
+      ((/[a-z]/u.test(segment) && /[A-Z]/u.test(segment)) || share(segment, DIGITS) >= 0.2)));
 
 const decoded = (segment: string) => {
   try {
@@ -73,12 +86,13 @@ const redactSegment = (raw: string) => {
     return ":email";
   }
 
-  return UUID.test(segment) || DIGIT_RUN.test(segment) || isToken(segment) ? ":id" : raw;
+  return UUID.test(segment) || isNumericId(segment) || isToken(segment) ? ":id" : raw;
 };
 
 /**
  * The default path redaction. Replaces each segment that looks like an email with
- * `:email`, and each UUID, run of 4 or more digits or high-entropy token with `:id`.
+ * `:email`, and each UUID, all-digit segment of 4 or more digits (years excepted) or
+ * high-entropy token with `:id`.
  */
 export const redactIdSegments = (path: string) => path.split("/").map(redactSegment).join("/");
 

@@ -21,7 +21,53 @@ const pathParts = Arbitrary.array(
 
 const keyIndex = Arbitrary.schema(Schema.Int.check(Schema.isBetween({ maximum: 39, minimum: 0 })));
 
+const PASS_THROUGH = [
+  "/about",
+  "/robots.txt",
+  "/v2/api",
+  "/api/v1/members/42/posts",
+  "/members/123",
+  "/products/iphone-15-pro-max",
+  "/blog/2026/hello",
+  "/blog/2026/10/21/post",
+  "/archive/2024",
+  "/archive/1999",
+  "/2026-10-hello-world",
+  "/changelog/2026-q3",
+  "/docs/es2015",
+  "/css/main.1234.css",
+  "/img/hero-1920x1080.png",
+  "/assets/index-3f9c0a6e1b2d4c5e.js",
+  "/releases/v1.2.3456",
+  "/internationalization2",
+  "/blog/how-to-use-effect",
+] as const;
+
+const REDACTED = [
+  ["/orders/1234567", "/orders/:id"],
+  ["/orders/1234", "/orders/:id"],
+  ["/orders/2100", "/orders/:id"],
+  ["/members/ada@example.com/orders/40213", "/members/:email/orders/:id"],
+  ["/members/ada%40example.com", "/members/:email"],
+  ["/runs/0199a3b2-6f1e-7c3d-8a4b-1c2d3e4f5a6b", "/runs/:id"],
+  ["/reset/3f9c0a6e1b2d4c5e8f7a", "/reset/:id"],
+  ["/blobs/da39a3ee5e6b4b0d3255bfef95601890afd80709", "/blobs/:id"],
+  ["/invite/dGhpc0lzQVRva2VuMTIz", "/invite/:id"],
+  ["/share/k3j4h5g6f7d8s9a0q1w2", "/share/:id"],
+  ["/magic/Xy7_kQ2-pL9mN4vB8cR1", "/magic/:id"],
+] as const;
+
 describe("request facts", () => {
+  it("ordinary, dated, versioned and file-name segments pass through", () => {
+    expect(PASS_THROUGH.map((path) => redactIdSegments(path))).toStrictEqual([...PASS_THROUGH]);
+  });
+
+  it("emails, numeric ids, UUIDs and opaque tokens are redacted", () => {
+    expect(REDACTED.map(([path]) => redactIdSegments(path))).toStrictEqual(
+      REDACTED.map(([, redacted]) => redacted),
+    );
+  });
+
   it.prop(
     "captured queries keep only allow-listed keys, within the key, value and length caps",
     {
