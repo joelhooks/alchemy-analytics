@@ -1,9 +1,9 @@
-import { Clock, Crypto, DateTime, Effect, Schema } from "effect";
+import { Clock, DateTime, Effect, Schema } from "effect";
 
 import { EventSink } from "./event-sink.js";
 import { RawEventSchema } from "./schemas.js";
 import type { BodySchema, EventSource, IdentityMode } from "./schemas.js";
-import { webCryptoLayer } from "./web-crypto.js";
+import { randomUuidV7 } from "./web-crypto.js";
 
 export interface CaptureEventOptions<Body extends BodySchema> {
   readonly anonymousId: string;
@@ -21,14 +21,13 @@ export const captureEvent = <Body extends BodySchema>(options: CaptureEventOptio
   return (body: Body["Type"]): Effect.Effect<void, never, EventSink> =>
     Effect.gen(function* recordEvent() {
       const sink = yield* EventSink;
-      const crypto = yield* Crypto.Crypto;
       const now = yield* Clock.currentTimeMillis;
 
       const event = yield* decodeRawEvent({
         anonymousId: options.anonymousId,
         body: yield* encodeBody(body),
         identityMode: options.identityMode ?? "persistent",
-        messageId: yield* crypto.randomUUIDv7,
+        messageId: yield* randomUuidV7,
         server: {
           host: options.host,
           receivedAt: DateTime.formatIso(DateTime.makeUnsafe(now)),
@@ -38,8 +37,5 @@ export const captureEvent = <Body extends BodySchema>(options: CaptureEventOptio
       });
 
       yield* sink.send([event]);
-    }).pipe(
-      Effect.provide(webCryptoLayer),
-      Effect.catchCause((cause) => Effect.logWarning("event capture failed", cause)),
-    );
+    }).pipe(Effect.catchCause((cause) => Effect.logWarning("event capture failed", cause)));
 };

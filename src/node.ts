@@ -101,7 +101,11 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
         ),
       );
 
-      const drain = take.pipe(Effect.andThen(postPending));
+      // post already logs its own failures; this keeps an unforeseen one from ending the loop unseen.
+      const drain = take.pipe(
+        Effect.andThen(postPending),
+        Effect.catchCause((cause) => Effect.logWarning("event sink drain failed", cause)),
+      );
       const closed = yield* Ref.make(false);
 
       // Registered before the loop, so it runs after scope close has interrupted the loop.

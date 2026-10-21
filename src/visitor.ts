@@ -2,6 +2,7 @@ import { Crypto, Effect, Schema } from "effect";
 
 import { AnonymousIdSchema } from "./schemas.js";
 import type { AnonymousId, IdentityMode } from "./schemas.js";
+import { randomUuidV7 } from "./web-crypto.js";
 
 export const VISITOR_COOKIE = "rat_vid";
 
@@ -67,10 +68,8 @@ export const resolveVisitor = (input: VisitorInput) =>
       } satisfies Visitor;
     }
 
-    const crypto = yield* Crypto.Crypto;
-
     return {
-      anonymousId: yield* anonymousIdOf(yield* crypto.randomUUIDv7),
+      anonymousId: yield* anonymousIdOf(yield* randomUuidV7),
       issueCookie: true,
     } satisfies Visitor;
   });
