@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest";
-import { Effect, Exit, Layer, Redacted, Ref, Schema } from "effect";
+import { Clock, Effect, Exit, Layer, Logger, Redacted, Ref, Schema } from "effect";
 import * as Arbitrary from "effect/Arbitrary";
 import * as HttpClient from "effect/http/HttpClient";
 import * as HttpClientError from "effect/http/HttpClientError";
@@ -155,6 +155,73 @@ describe("node event sink", () => {
         expect(Exit.isSuccess(exit)).toBe(true);
       }),
     { arbitrary: { runs: 20 } },
+  );
+
+  it.live.prop(
+    "scope close against a hanging endpoint finishes within closeTimeout, mid-drain or not",
+    {
+      events: Arbitrary.array(rawEvent, { maxLength: 6, minLength: 1 }),
+      midDrain: Arbitrary.schema(Schema.Boolean),
+    },
+    ({ events, midDrain }) =>
+      Effect.gen(function* boundedClose() {
+        const started = yield* Clock.currentTimeMillis;
+
+        const exit = yield* Effect.exit(
+          Effect.gen(function* sendThenWait() {
+            yield* sendAll([events]);
+            yield* Effect.sleep(midDrain ? "30 millis" : "0 millis");
+          }).pipe(
+            Effect.provide(
+              nodeEventSink(
+                options({
+                  closeTimeout: "100 millis",
+                  flushInterval: midDrain ? "5 millis" : "1 hour",
+                  maxBatch: 1,
+                  requestTimeout: "1 hour",
+                }),
+              ).pipe(Layer.provide(brokenClient("hangs"))),
+            ),
+            Effect.timeout("3 seconds"),
+          ),
+        );
+
+        expect(Exit.isSuccess(exit)).toBe(true);
+        expect((yield* Clock.currentTimeMillis) - started).toBeLessThan(1000);
+      }),
+    { arbitrary: { runs: 6 } },
+  );
+
+  it.effect.prop(
+    "send after scope close is a logged no-op that posts nothing",
+    { events: Arbitrary.array(rawEvent, { maxLength: 4, minLength: 1 }) },
+    ({ events }) =>
+      Effect.gen(function* sendAfterClose() {
+        const posted = yield* Ref.make<readonly Posted[]>([]);
+        const logs: string[] = [];
+
+        const sink = yield* Effect.scoped(
+          Effect.gen(function* buildThenClose() {
+            const context = yield* Layer.build(
+              nodeEventSink(options()).pipe(Layer.provide(recordingClient(posted))),
+            );
+
+            return yield* EventSink.pipe(Effect.provideContext(context));
+          }),
+        );
+
+        const exit = yield* Effect.exit(
+          sink
+            .send(events)
+            .pipe(
+              Effect.provide(Logger.layer([Logger.make((log) => logs.push(String(log.message)))])),
+            ),
+        );
+
+        expect(Exit.isSuccess(exit)).toBe(true);
+        expect(yield* Ref.get(posted)).toStrictEqual([]);
+        expect(logs.some((line) => line.includes("closed"))).toBe(true);
+      }),
   );
 
   it.effect("the background loop flushes on its interval without waiting for close", () =>

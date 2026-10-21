@@ -1,4 +1,4 @@
-import { Array as Arr, Effect, Layer, Queue, Redacted, Schema } from "effect";
+import { Array as Arr, Effect, Fiber, Layer, Queue, Redacted, Ref, Schema } from "effect";
 import type { Duration } from "effect";
 import * as FetchHttpClient from "effect/http/FetchHttpClient";
 import * as HttpClient from "effect/http/HttpClient";
@@ -16,7 +16,11 @@ export const DEFAULT_FLUSH_INTERVAL: Duration.Input = "5 seconds";
 
 export const DEFAULT_REQUEST_TIMEOUT: Duration.Input = "10 seconds";
 
+export const DEFAULT_CLOSE_TIMEOUT: Duration.Input = "10 seconds";
+
 export interface NodeEventSinkOptions {
+  /** Longest time scope close may spend stopping the loop and flushing. */
+  readonly closeTimeout?: Duration.Input;
   readonly flushInterval?: Duration.Input;
   readonly maxBatch?: number;
   readonly maxBuffer?: number;
@@ -55,17 +59,14 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
           Effect.asVoid,
         );
 
-      const drain = Queue.clear(queue).pipe(
-        Effect.flatMap((events) =>
-          Effect.forEach(Arr.chunksOf(events, maxBatch), post, {
-            discard: true,
-          }),
-        ),
-      );
+      const postAll = (events: readonly RawEvent[]) =>
+        Effect.forEach(Arr.chunksOf(events, maxBatch), post, { discard: true });
 
-      yield* Effect.addFinalizer(() => drain);
+      const drain = Queue.clear(queue).pipe(Effect.flatMap(postAll));
+      const closed = yield* Ref.make(false);
 
-      yield* Effect.forkScoped(
+      // Detached, not scoped: scope close must not wait unbounded on an in-flight drain.
+      const loop = yield* Effect.forkDetach(
         Effect.forever(
           Effect.sleep(options.flushInterval ?? DEFAULT_FLUSH_INTERVAL).pipe(
             Effect.andThen(Effect.uninterruptible(drain)),
@@ -73,13 +74,39 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
         ),
       );
 
+      yield* Effect.addFinalizer(() =>
+        Effect.gen(function* closeSink() {
+          yield* Ref.set(closed, true);
+          yield* Fiber.interrupt(loop);
+          const rest = yield* Queue.clear(queue);
+          yield* Queue.shutdown(queue);
+          yield* postAll(rest);
+        }).pipe(
+          Effect.timeoutOrElse({
+            duration: options.closeTimeout ?? DEFAULT_CLOSE_TIMEOUT,
+            orElse: () =>
+              Queue.shutdown(queue).pipe(
+                Effect.andThen(
+                  Effect.logWarning("event sink close timed out; unsent events were dropped"),
+                ),
+              ),
+          }),
+        ),
+      );
+
       return {
         send: (events) =>
-          Queue.offerAll(queue, events).pipe(
-            Effect.flatMap((rejected) =>
-              rejected.length === 0
-                ? Effect.void
-                : Effect.logWarning(`event buffer full; dropped ${rejected.length} events`),
+          Ref.get(closed).pipe(
+            Effect.flatMap((isClosed) =>
+              isClosed
+                ? Effect.logWarning(`event sink is closed; dropped ${events.length} events`)
+                : Queue.offerAll(queue, events).pipe(
+                    Effect.flatMap((rejected) =>
+                      rejected.length === 0
+                        ? Effect.void
+                        : Effect.logWarning(`event buffer full; dropped ${rejected.length} events`),
+                    ),
+                  ),
             ),
           ),
       };
