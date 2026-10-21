@@ -3,7 +3,7 @@ import { Effect, Predicate, Schema } from "effect";
 import * as Arbitrary from "effect/Arbitrary";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 
-import { GEO_LABEL_KEYS, NEVER_CAPTURED_GEO_KEYS, requestGeoOf } from "../src/index.js";
+import { GEO_LABEL_KEYS, NEVER_CAPTURED_GEO_KEYS, requestGeoOf } from "../src/request-geo.js";
 
 const TOO_LONG = "x".repeat(101);
 

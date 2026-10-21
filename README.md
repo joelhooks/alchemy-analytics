@@ -20,13 +20,13 @@ Until a release is on npm, install from GitHub: `pnpm add github:joelhooks/alche
 
 ## Entry points
 
-| Import                     | What it gives you                                                                                                           |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `alchemy-analytics`        | `withEventCapture`, `captureEvent`, `EventSink`, `VisitorSalt`, the schemas, `rawEventSchema`, `toRawEvent`, `fromRawEvent` |
-| `alchemy-analytics/basin`  | `Basin`, `basinFoundation`, `basinStream`, `icebergSink`, `EVENTS_TABLE`                                                    |
-| `alchemy-analytics/ingest` | `withIngestRoute`, `ingestEvents`, `IngestBatchSchema`, the ingest limits                                                   |
-| `alchemy-analytics/node`   | `NodeEventSink`, `nodeEventSink`, the buffer defaults                                                                       |
-| `alchemy-analytics/memory` | `memoryEventsLayer`, `EventSinkMemory` for tests                                                                            |
+| Import                     | What it gives you                                                                                                                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `alchemy-analytics`        | `withEventCapture`, `DEFAULT_CAPTURE_TIMEOUT`, `redactIdSegments`, `captureEvent`, `EventSink`, `EventSinkError`, `VisitorSalt`, the schemas, `rawEventSchema`, `toRawEvent`, `fromRawEvent` |
+| `alchemy-analytics/basin`  | `Basin`, `basinFoundation`, `basinStream`, `icebergSink`, `EVENTS_TABLE`                                                                                                                     |
+| `alchemy-analytics/ingest` | `withIngestRoute`, `ingestEvents`, `IngestBatchSchema`, the ingest limits                                                                                                                    |
+| `alchemy-analytics/node`   | `NodeEventSink`, `nodeEventSink`, the buffer defaults                                                                                                                                        |
+| `alchemy-analytics/memory` | `memoryEventsLayer`, `EventSinkMemory` for tests                                                                                                                                             |
 
 ## Worker: one layer, one line
 

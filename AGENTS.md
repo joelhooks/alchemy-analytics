@@ -9,5 +9,6 @@ Capture-first, privacy-first request analytics for [Alchemy](https://alchemy.run
 - The ingest route authenticates before it reads the body. Keep the order: method, then auth, then declared length, then streamed length, then batch bound, then decode.
 - Effect stays at `4.0.0` as an exact peer so consumers share one runtime. Alchemy stays an optional peer; only `src/basin.ts` imports it.
 - Effect `4.0.0` `Queue.takeBetween(queue, 0, n)` returns an empty array even when the queue holds items. The Node sink drains with `Queue.clear` instead.
+- The root entry exports only the public surface pinned in `test/exports.test.ts`. Every root export is a semver commitment, so internal helpers stay in their own modules.
 - Gates: `pnpm build && pnpm typecheck && pnpm lint && pnpm test`. Prefer property and model tests over examples.
 - See `PROVENANCE.md` for where the code came from.

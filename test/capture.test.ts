@@ -9,10 +9,10 @@ import {
   EventSinkError,
   RawEventSchema,
   RequestBodySchema,
-  VISITOR_COOKIE,
   VisitorSalt,
   withEventCapture,
 } from "../src/index.js";
+import { VISITOR_COOKIE } from "../src/visitor.js";
 import type { RawEvent } from "../src/index.js";
 import { EventSinkMemory, memoryEventsLayer } from "../src/memory.js";
 import { queryPairs, slug, word } from "./arbitraries.js";

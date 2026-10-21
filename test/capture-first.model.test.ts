@@ -4,13 +4,8 @@ import * as Arbitrary from "effect/Arbitrary";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
 
-import {
-  EventSink,
-  VISITOR_COOKIE,
-  VisitorSalt,
-  captureEvent,
-  withEventCapture,
-} from "../src/index.js";
+import { EventSink, VisitorSalt, captureEvent, withEventCapture } from "../src/index.js";
+import { VISITOR_COOKIE } from "../src/visitor.js";
 import { memoryEventsLayer } from "../src/memory.js";
 import { queryPairs, word } from "./arbitraries.js";
 import { SinkFailureSchema, brokenSink, withBackground } from "./support.js";
