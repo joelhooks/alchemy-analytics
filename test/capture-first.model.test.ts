@@ -206,7 +206,14 @@ describe("capture first", () => {
           expect(broken.headers).toStrictEqual(bare.headers);
           expect(healthy.body).toStrictEqual(bare.body);
           expect(healthy.headers).toStrictEqual(bare.headers);
-          expect(broken.visitorCookie && !healthy.visitorCookie).toBe(false);
+          const issues =
+            generated.scenario.mode === "persistent" &&
+            generated.scenario.html &&
+            !generated.scenario.binary &&
+            !generated.scenario.withCookie;
+
+          expect(healthy.visitorCookie).toBe(issues);
+          expect(broken.visitorCookie).toBe(issues && generated.failure !== "dieSalt");
         }
       }),
     { arbitrary: { runs: 200 } },
