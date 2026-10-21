@@ -1,4 +1,4 @@
-import { Clock, Crypto, DateTime, Effect, Schema } from "effect";
+import { Clock, DateTime, Effect, Schema } from "effect";
 import type { Duration } from "effect";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
@@ -19,7 +19,7 @@ import { RawEventSchema, RequestBodySchema, isGeoLabel } from "./schemas.js";
 import type { IdentityMode } from "./schemas.js";
 import { VisitorSalt } from "./visitor-salt.js";
 import { VISITOR_COOKIE, identitySalt, resolveVisitor, saltedHash } from "./visitor.js";
-import { webCryptoLayer } from "./web-crypto.js";
+import { randomUuidV7, webCryptoLayer } from "./web-crypto.js";
 
 export interface CaptureOptions<RB> {
   readonly captureCity?: boolean;
@@ -58,7 +58,6 @@ const recordRequest = <RB>(
   Effect.gen(function* recordRequestEvent() {
     const sink = yield* EventSink;
     const salt = yield* (yield* VisitorSalt).salt;
-    const crypto = yield* Crypto.Crypto;
     const { headers } = request;
     const ip = headers["cf-connecting-ip"];
     const userAgent = clip(headers["user-agent"], MAX_HEADER_LENGTH);
@@ -101,7 +100,7 @@ const recordRequest = <RB>(
       anonymousId: visitor.anonymousId,
       body: yield* encodeRequestBody(body),
       identityMode: options.identityMode,
-      messageId: yield* crypto.randomUUIDv7,
+      messageId: yield* randomUuidV7,
       server: withoutUndefined({
         ...geo,
         country: isGeoLabel(country) ? country : geo.country,
