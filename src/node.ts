@@ -131,6 +131,8 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
       );
 
       return {
+        // A send that races close offers to a shut-down queue, which rejects every event
+        // without failing (pinned in node-sink.test.ts). catchCause is the backstop.
         send: (events: readonly RawEvent[]) =>
           Ref.get(closed).pipe(
             Effect.flatMap((isClosed) =>
@@ -140,7 +142,18 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
                     Effect.flatMap((rejected) =>
                       rejected.length === 0
                         ? Effect.void
-                        : Effect.logWarning(`event buffer full; dropped ${rejected.length} events`),
+                        : Ref.get(closed).pipe(
+                            Effect.flatMap((closedNow) =>
+                              Effect.logWarning(
+                                closedNow
+                                  ? `event sink is closed; dropped ${rejected.length} events`
+                                  : `event buffer full; dropped ${rejected.length} events`,
+                              ),
+                            ),
+                          ),
+                    ),
+                    Effect.catchCause((cause) =>
+                      Effect.logWarning(`event sink dropped ${events.length} events`, cause),
                     ),
                   ),
             ),

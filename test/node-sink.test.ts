@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@effect/vitest";
-import { Clock, Effect, Exit, Layer, Logger, Redacted, Ref, Schema } from "effect";
+import { Clock, Effect, Exit, Layer, Logger, Queue, Redacted, Ref, Schema } from "effect";
 import * as Arbitrary from "effect/Arbitrary";
 import * as HttpClient from "effect/http/HttpClient";
 import * as HttpClientError from "effect/http/HttpClientError";
@@ -262,6 +262,21 @@ describe("node event sink", () => {
 
       expect(delivered.length).toBeGreaterThanOrEqual(events.length - 1);
     }),
+  );
+
+  it.effect.prop(
+    "a send racing close meets a shut-down queue, which rejects every event without failing",
+    { events: Arbitrary.array(rawEvent, { maxLength: 4, minLength: 1 }) },
+    ({ events }) =>
+      Effect.gen(function* shutDownQueueContract() {
+        const queue = yield* Queue.dropping<RawEvent>(10);
+
+        yield* Queue.shutdown(queue);
+
+        const exit = yield* Effect.exit(Queue.offerAll(queue, events));
+
+        expect(exit).toStrictEqual(Exit.succeed(events));
+      }),
   );
 
   it.effect.prop(
