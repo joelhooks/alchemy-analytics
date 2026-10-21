@@ -1,4 +1,4 @@
-import { Array as Arr, Effect, Fiber, Layer, Queue, Redacted, Ref, Schema } from "effect";
+import { Array as Arr, Effect, Layer, Queue, Redacted, Ref, Schema } from "effect";
 import type { Duration } from "effect";
 import * as FetchHttpClient from "effect/http/FetchHttpClient";
 import * as HttpClient from "effect/http/HttpClient";
@@ -80,28 +80,37 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
           Effect.asVoid,
         );
 
-      const postAll = (events: readonly RawEvent[]) =>
-        Effect.forEach(Arr.chunksOf(events, maxBatch), post, { discard: true });
+      // Chunks taken from the queue but not yet posted. Taking moves events here in one
+      // uninterruptible step, so an interrupted drain loses at most the in-flight POST.
+      const pending = yield* Ref.make<readonly (readonly RawEvent[])[]>([]);
 
-      const drain = Queue.clear(queue).pipe(Effect.flatMap(postAll));
-      const closed = yield* Ref.make(false);
-
-      // Detached, not scoped: scope close must not wait unbounded on an in-flight drain.
-      const loop = yield* Effect.forkDetach(
-        Effect.forever(
-          Effect.sleep(options.flushInterval ?? DEFAULT_FLUSH_INTERVAL).pipe(
-            Effect.andThen(Effect.uninterruptible(drain)),
+      const take = Effect.uninterruptible(
+        Queue.clear(queue).pipe(
+          Effect.flatMap((events) =>
+            Ref.update(pending, (chunks) => [...chunks, ...Arr.chunksOf(events, maxBatch)]),
           ),
         ),
       );
 
+      const postPending: Effect.Effect<void> = Ref.modify(pending, ([next, ...rest]) => [
+        next,
+        rest,
+      ]).pipe(
+        Effect.flatMap((chunk) =>
+          chunk === undefined ? Effect.void : post(chunk).pipe(Effect.andThen(postPending)),
+        ),
+      );
+
+      const drain = take.pipe(Effect.andThen(postPending));
+      const closed = yield* Ref.make(false);
+
+      // Registered before the loop, so it runs after scope close has interrupted the loop.
       yield* Effect.addFinalizer(() =>
         Effect.gen(function* closeSink() {
           yield* Ref.set(closed, true);
-          yield* Fiber.interrupt(loop);
-          const rest = yield* Queue.clear(queue);
+          yield* take;
           yield* Queue.shutdown(queue);
-          yield* postAll(rest);
+          yield* postPending;
         }).pipe(
           Effect.timeoutOrElse({
             duration: options.closeTimeout ?? DEFAULT_CLOSE_TIMEOUT,
@@ -112,6 +121,12 @@ export const nodeEventSink = (options: NodeEventSinkOptions) =>
                 ),
               ),
           }),
+        ),
+      );
+
+      yield* Effect.forkScoped(
+        Effect.forever(
+          Effect.sleep(options.flushInterval ?? DEFAULT_FLUSH_INTERVAL).pipe(Effect.andThen(drain)),
         ),
       );
 

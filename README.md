@@ -124,7 +124,7 @@ const program = Effect.gen(function* () {
 );
 ```
 
-`send` puts events in a bounded buffer and returns at once. A background fiber posts batches on an interval. Closing the layer's scope flushes whatever is left. A full buffer drops the new events and logs a warning. A failed or timed-out post logs a warning and drops that batch, with no retry. Closing takes at most `closeTimeout` in total, even against a hung endpoint. After close the queue is shut down, and `send` logs and drops. The caller is never blocked and never fails.
+`send` puts events in a bounded buffer and returns at once. A background fiber posts batches on an interval. Closing the layer's scope flushes whatever is left. A full buffer drops the new events and logs a warning. A failed or timed-out post logs a warning and drops that batch, with no retry. Closing stops the background loop, aborting any in-flight post, then posts everything still unsent. It takes at most `closeTimeout` in total, even against a hung endpoint, and no post starts after the scope has closed. At most the one aborted in-flight batch is lost. After close the queue is shut down, and `send` logs and drops. The caller is never blocked and never fails.
 
 | `NodeEventSink` option | Default        | Meaning                                                                                                                                                                             |
 | ---------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

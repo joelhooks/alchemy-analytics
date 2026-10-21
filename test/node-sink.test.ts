@@ -192,6 +192,78 @@ describe("node event sink", () => {
     { arbitrary: { runs: 6 } },
   );
 
+  it.live("no POST starts after scope close, even when the endpoint is slow but healthy", () =>
+    Effect.gen(function* noPostAfterClose() {
+      const starts: number[] = [];
+      const events = yield* Arbitrary.sampleEffect(rawEvent, { count: 6, seed: 9 }).pipe(
+        Effect.orDie,
+      );
+
+      const slowClient = Layer.succeed(
+        HttpClient.HttpClient,
+        HttpClient.make((request) =>
+          Clock.currentTimeMillis.pipe(
+            Effect.flatMap((now) => Effect.sync(() => starts.push(now))),
+            Effect.andThen(Effect.sleep("150 millis")),
+            Effect.as(HttpClientResponse.fromWeb(request, new Response(null, { status: 202 }))),
+          ),
+        ),
+      );
+
+      yield* Effect.gen(function* sendThenLinger() {
+        yield* sendAll([events]);
+        yield* Effect.sleep("40 millis");
+      }).pipe(
+        Effect.provide(
+          nodeEventSink(
+            options({ closeTimeout: "50 millis", flushInterval: "5 millis", maxBatch: 1 }),
+          ).pipe(Layer.provide(slowClient)),
+        ),
+      );
+
+      const closedAt = yield* Clock.currentTimeMillis;
+
+      yield* Effect.sleep("1 second");
+
+      expect(starts.length).toBeGreaterThan(0);
+      expect(starts.filter((start) => start > closedAt)).toStrictEqual([]);
+    }),
+  );
+
+  it.live("closing mid-drain loses at most the in-flight POST", () =>
+    Effect.gen(function* closeMidDrain() {
+      const delivered: RawEvent[] = [];
+      const events = yield* Arbitrary.sampleEffect(rawEvent, { count: 5, seed: 13 }).pipe(
+        Effect.orDie,
+      );
+
+      const slowClient = Layer.succeed(
+        HttpClient.HttpClient,
+        HttpClient.make((request) =>
+          Effect.sleep("60 millis").pipe(
+            Effect.andThen(decodeBatch(bodyText(request))),
+            Effect.orDie,
+            Effect.flatMap((batch) => Effect.sync(() => delivered.push(...batch.events))),
+            Effect.as(HttpClientResponse.fromWeb(request, new Response(null, { status: 202 }))),
+          ),
+        ),
+      );
+
+      yield* Effect.gen(function* sendThenCloseMidDrain() {
+        yield* sendAll([events]);
+        yield* Effect.sleep("30 millis");
+      }).pipe(
+        Effect.provide(
+          nodeEventSink(
+            options({ closeTimeout: "5 seconds", flushInterval: "5 millis", maxBatch: 1 }),
+          ).pipe(Layer.provide(slowClient)),
+        ),
+      );
+
+      expect(delivered.length).toBeGreaterThanOrEqual(events.length - 1);
+    }),
+  );
+
   it.effect.prop(
     "send after scope close is a logged no-op that posts nothing",
     { events: Arbitrary.array(rawEvent, { maxLength: 4, minLength: 1 }) },
