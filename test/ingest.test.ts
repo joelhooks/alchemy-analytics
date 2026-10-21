@@ -213,36 +213,49 @@ describe("ingest route", () => {
       }).pipe(Effect.provide(memoryEventsLayer("salt"))),
   );
 
-  it.effect("malformed JSON, wrong methods and a failing sink answer without throwing", () =>
-    Effect.gen(function* edgeAnswers() {
-      const malformed = yield* handle(
-        trackedRequest(URL_, { authorization: bearer }, textChunks("{nope", 4)),
-      ).pipe(Effect.provide(memoryEventsLayer("salt")));
+  it.effect(
+    "malformed JSON, wrong methods and a failing or dying sink answer without throwing",
+    () =>
+      Effect.gen(function* edgeAnswers() {
+        const malformed = yield* handle(
+          trackedRequest(URL_, { authorization: bearer }, textChunks("{nope", 4)),
+        ).pipe(Effect.provide(memoryEventsLayer("salt")));
 
-      const wrongMethod = trackedRequest(URL_, { authorization: bearer }, [], "GET");
-      const wrongMethodResponse = yield* handle(wrongMethod).pipe(
-        Effect.provide(memoryEventsLayer("salt")),
-      );
+        const wrongMethod = trackedRequest(URL_, { authorization: bearer }, [], "GET");
+        const wrongMethodResponse = yield* handle(wrongMethod).pipe(
+          Effect.provide(memoryEventsLayer("salt")),
+        );
 
-      const sinkDown = yield* handle(
-        trackedRequest(
-          URL_,
-          { authorization: bearer },
-          textChunks(batchJson(yield* sampleEvents(2, 3)), 64),
-        ),
-      ).pipe(
-        Effect.provide(
-          Layer.succeed(EventSink, {
-            send: () => Effect.fail(new EventSinkError({ cause: new Error("down") })),
-          }),
-        ),
-      );
+        const sinkDown = yield* handle(
+          trackedRequest(
+            URL_,
+            { authorization: bearer },
+            textChunks(batchJson(yield* sampleEvents(2, 3)), 64),
+          ),
+        ).pipe(
+          Effect.provide(
+            Layer.succeed(EventSink, {
+              send: () => Effect.fail(new EventSinkError({ cause: new Error("down") })),
+            }),
+          ),
+        );
 
-      expect(malformed.status).toBe(400);
-      expect(wrongMethodResponse.status).toBe(405);
-      expect(wrongMethod.wasPulled()).toBe(false);
-      expect(sinkDown.status).toBe(502);
-    }),
+        const sinkDies = yield* handle(
+          trackedRequest(
+            URL_,
+            { authorization: bearer },
+            textChunks(batchJson(yield* sampleEvents(2, 3)), 64),
+          ),
+        ).pipe(
+          Effect.provide(Layer.succeed(EventSink, { send: () => Effect.die(new Error("threw")) })),
+        );
+
+        expect(malformed.status).toBe(400);
+        expect(sinkDies.status).toBe(502);
+        expect(wrongMethodResponse.status).toBe(405);
+        expect(wrongMethod.wasPulled()).toBe(false);
+        expect(sinkDown.status).toBe(502);
+      }),
   );
 
   it.effect("the default limits reject one event and one byte past them", () =>

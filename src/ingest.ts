@@ -153,10 +153,15 @@ export const ingestEvents = (options: IngestOptions) =>
     if (events.length > 0) {
       const sink = yield* EventSink;
 
-      yield* sink.send(events).pipe(
-        Effect.tapError((error) => Effect.logWarning("event sink rejected an ingest batch", error)),
-        Effect.mapError(() => new IngestRejection({ reason: "sink unavailable", status: 502 })),
-      );
+      yield* sink
+        .send(events)
+        .pipe(
+          Effect.catchCause((cause) =>
+            Effect.logWarning("event sink rejected an ingest batch", cause).pipe(
+              Effect.andThen(reject(502, "sink unavailable")),
+            ),
+          ),
+        );
     }
 
     return respond(202, { accepted: events.length });
