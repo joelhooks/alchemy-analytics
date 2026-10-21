@@ -4,20 +4,20 @@ This package was extracted from the events package of [`joelhooks/rat-stack`](ht
 
 ## Lifted
 
-| File                      | Change from the source                                                                                                     |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `src/basin.ts`            | Unchanged. Resource ids, logical names, retention and the `events_raw` table are identical.                                |
-| `src/capture.ts`          | A hard-coded skipped path became the `skip` option. Added `captureQuery`, which defaults to off, and a fixed `host` label. |
-| `src/event-sink.ts`       | Service key renamed to `alchemy-analytics/EventSink`.                                                                      |
-| `src/event-sink-error.ts` | Unchanged.                                                                                                                 |
-| `src/memory.ts`           | Service key renamed.                                                                                                       |
-| `src/request-facts.ts`    | Unchanged.                                                                                                                 |
-| `src/request-geo.ts`      | Imports `RequestGeoSchema` and `isGeoLabel` locally instead of from a sibling package.                                     |
-| `src/schemas.ts`          | Inlined `RequestGeoSchema`. `EventSourceSchema` gained `"node"`. Added `rawEventSchema`, `toRawEvent` and `fromRawEvent`.  |
-| `src/visitor.ts`          | Unchanged. The visitor cookie keeps its `rat_vid` name so existing persistent ids survive a switch.                        |
-| `src/visitor-salt.ts`     | Service key renamed.                                                                                                       |
-| `src/web-crypto.ts`       | Unchanged.                                                                                                                 |
-| `test/*`                  | `arbitraries.ts` and the capture, request-facts, request-geo and visitor model tests, with generic hosts.                  |
+| File                      | Change from the source                                                                                                                                                                                   |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/basin.ts`            | Unchanged. Resource ids, logical names, retention and the `events_raw` table are identical.                                                                                                              |
+| `src/capture.ts`          | A hard-coded skipped path became the `skip` option. Added the `captureQuery` allow-list, `redactPath`, `captureTimeout`, length caps and a fixed `host` label. Daily mode rotates `ipHash` with the day. |
+| `src/event-sink.ts`       | Service key renamed to `alchemy-analytics/EventSink`.                                                                                                                                                    |
+| `src/event-sink-error.ts` | Unchanged.                                                                                                                                                                                               |
+| `src/memory.ts`           | Service key renamed.                                                                                                                                                                                     |
+| `src/request-facts.ts`    | The sensitive-key denylist became a keyed allow-list with key, value and length caps. Added `redactIdSegments`, also applied to the referrer path.                                                       |
+| `src/request-geo.ts`      | Imports `RequestGeoSchema` and `isGeoLabel` locally instead of from a sibling package.                                                                                                                   |
+| `src/schemas.ts`          | Inlined `RequestGeoSchema`. `EventSourceSchema` gained `"node"`. Added `rawEventSchema`, `toRawEvent` and `fromRawEvent`.                                                                                |
+| `src/visitor.ts`          | Unchanged. The visitor cookie keeps its `rat_vid` name so existing persistent ids survive a switch.                                                                                                      |
+| `src/visitor-salt.ts`     | Service key renamed.                                                                                                                                                                                     |
+| `src/web-crypto.ts`       | Unchanged.                                                                                                                                                                                               |
+| `test/*`                  | `arbitraries.ts` and the capture, request-facts, request-geo and visitor model tests, with generic hosts.                                                                                                |
 
 Crash archiving from the source package stays there. It is specific to that application.
 

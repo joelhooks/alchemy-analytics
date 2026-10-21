@@ -71,15 +71,16 @@ The catalog, sink and pipeline are declared at deploy time only. They need `EVEN
 
 ### Capture options
 
-| Option            | Default      | Meaning                                                                                                                                          |
-| ----------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `identityMode`    | —            | `"daily"` or `"persistent"`. See [Identity modes](#identity-modes).                                                                              |
-| `runInBackground` | —            | Runs the sink write off the response path, e.g. `waitUntil`. It should fork and return, not await the sink.                                      |
-| `captureTimeout`  | `250 millis` | The longest capture may hold the response. On timeout the response goes out unchanged and the event is dropped. Named `DEFAULT_CAPTURE_TIMEOUT`. |
-| `captureCity`     | `false`      | Also records `request.cf.city`.                                                                                                                  |
-| `captureQuery`    | `false`      | Records query values for keys that pass the sensitive-key allow-list. Off records no query at all.                                               |
-| `host`            | request      | A fixed service label instead of the request's `Host` header.                                                                                    |
-| `skip`            | none         | `(path) => boolean`: paths that are never captured.                                                                                              |
+| Option            | Default            | Meaning                                                                                                                                          |
+| ----------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `identityMode`    | —                  | `"daily"` or `"persistent"`. See [Identity modes](#identity-modes).                                                                              |
+| `runInBackground` | —                  | Runs the sink write off the response path, e.g. `waitUntil`. It should fork and return, not await the sink.                                      |
+| `captureTimeout`  | `250 millis`       | The longest capture may hold the response. On timeout the response goes out unchanged and the event is dropped. Named `DEFAULT_CAPTURE_TIMEOUT`. |
+| `captureCity`     | `false`            | Also records `request.cf.city`.                                                                                                                  |
+| `captureQuery`    | `[]`               | Query keys whose values are recorded, e.g. `["utm_source", "utm_medium"]`. Every other key is dropped.                                           |
+| `host`            | request            | A fixed service label instead of the request's `Host` header.                                                                                    |
+| `redactPath`      | `redactIdSegments` | Rewrites the path and referrer path before they are recorded. `false` records them verbatim.                                                     |
+| `skip`            | none               | `(path) => boolean`: paths that are never captured.                                                                                              |
 
 ## Node: a sink that posts to your own Worker
 
@@ -196,17 +197,42 @@ The body schema's encoded form must be JSON. A property test round-trips a gener
 
 Request capture records the method, path, status, duration, `Accept`, response content type, whether a `signature-agent` header was present, the referrer's origin and path, the user agent, coarse `request.cf` geography and a salted IP hash.
 
+Paths are captured with id-like segments redacted by default. `redactIdSegments` replaces each segment that looks like an email with `:email`. It replaces each UUID, each segment with a run of 4 or more digits, and each high-entropy token with `:id`. A token here means 16 or more characters that are all hex, or mostly base64url with both letters and digits and few separators. The same redaction applies to the referrer path. So `/reset/3f9c0a6e1b2d4c5e8f7a` becomes `/reset/:id`, and `/users/ada@example.com/orders/40213` becomes `/users/:email/orders/:id`.
+
+Readable slugs such as `/blog/how-to-use-effect` pass through, but redaction is a heuristic. If your routes carry other secrets, pass your own rule. You can also compose with the default:
+
+```ts
+import { redactIdSegments, withEventCapture } from "alchemy-analytics";
+
+withEventCapture({
+  identityMode: "daily",
+  redactPath: (path) => redactIdSegments(path).replace(/^\/invite\/[^/]+/u, "/invite/:code"),
+  runInBackground: inBackground,
+});
+```
+
+`redactPath: false` turns redaction off and records paths verbatim.
+
+Long values are cut, not dropped:
+
+| Field                                               | Cap                        |
+| --------------------------------------------------- | -------------------------- |
+| user agent, `Accept`, response content type, `host` | 256 characters             |
+| path and referrer                                   | 1024 characters            |
+| each recorded query value                           | 512 characters             |
+| recorded query keys                                 | 20 keys, 10 values per key |
+
 It never records:
 
 - request or response bodies
-- query-string values, unless `captureQuery` is on. Even then, values under keys that look sensitive (`auth`, `code`, `email`, `key`, `mail`, `otp`, `pass`, `secret`, `session`, `sig`, `token`, `t`) are dropped.
+- query-string values, except under keys you list in `captureQuery`
 - cookies, other than the package's own `rat_vid` visitor id in `persistent` mode
 - `Authorization`, `Proxy-Authorization`, API-key headers or other credentials
 - the raw IP address, which is only ever a salted hash
 - latitude, longitude, postal code or metro code, and city only with `captureCity`
 - the referrer's query string or fragment
 
-A property test sends generated requests that carry secrets in every one of those places. It asserts that none of them reach an encoded event.
+A property test sends generated requests that carry secrets in every one of those places. It also puts them in path and referrer-path segments, past the length caps of the user agent, `Accept`, content type, `host` and query values, and under query keys that are not listed. It asserts that none of them reach an encoded event, and that listed query values and ordinary path segments still do.
 
 ## Capture-first guarantees
 

@@ -12,7 +12,9 @@ export { EventSinkError } from "./event-sink-error.js";
 
 export { VisitorSalt } from "./visitor-salt.js";
 
-export { capturedQuery, isSensitiveKey, referrerOf } from "./request-facts.js";
+export { redactIdSegments } from "./request-facts.js";
+
+export type { PathRedaction } from "./request-facts.js";
 
 export { GEO_LABEL_KEYS, NEVER_CAPTURED_GEO_KEYS, requestGeoOf } from "./request-geo.js";
 

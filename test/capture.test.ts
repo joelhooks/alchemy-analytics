@@ -15,7 +15,7 @@ import {
 } from "../src/index.js";
 import type { RawEvent } from "../src/index.js";
 import { EventSinkMemory, memoryEventsLayer } from "../src/memory.js";
-import { queryPairs, word } from "./arbitraries.js";
+import { queryPairs, slug, word } from "./arbitraries.js";
 import { withBackground } from "./support.js";
 
 const Exchange = Schema.Struct({
@@ -28,7 +28,7 @@ const Exchange = Schema.Struct({
 
 const exchange = Arbitrary.all({
   email: word.pipe(Arbitrary.map((local) => `${local}@example.test`)),
-  path: Arbitrary.array(word, { maxLength: 4 }),
+  path: Arbitrary.array(slug, { maxLength: 4 }),
   query: queryPairs,
   scenario: Arbitrary.schema(Exchange),
   text: word,

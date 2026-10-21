@@ -4,7 +4,16 @@ import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
 
 import { EventSink } from "./event-sink.js";
-import { capturedQuery, referrerOf, withoutUndefined } from "./request-facts.js";
+import {
+  MAX_HEADER_LENGTH,
+  MAX_PATH_LENGTH,
+  capturedQuery,
+  clip,
+  redactorOf,
+  referrerOf,
+  withoutUndefined,
+} from "./request-facts.js";
+import type { PathRedaction } from "./request-facts.js";
 import { requestGeoOf } from "./request-geo.js";
 import { RawEventSchema, RequestBodySchema, isGeoLabel } from "./schemas.js";
 import type { IdentityMode } from "./schemas.js";
@@ -14,11 +23,14 @@ import { webCryptoLayer } from "./web-crypto.js";
 
 export interface CaptureOptions<RB> {
   readonly captureCity?: boolean;
-  readonly captureQuery?: boolean;
+  /** Query keys whose values are recorded. Defaults to none. */
+  readonly captureQuery?: readonly string[];
   /** Longest time capture may hold the response. Defaults to 250 ms. */
   readonly captureTimeout?: Duration.Input;
   readonly host?: string;
   readonly identityMode: IdentityMode;
+  /** Redacts the path and referrer path. Defaults to `redactIdSegments`; `false` opts out. */
+  readonly redactPath?: PathRedaction;
   readonly runInBackground: (effect: Effect.Effect<void>) => Effect.Effect<void, never, RB>;
   readonly skip?: (path: string) => boolean;
 }
@@ -49,7 +61,8 @@ const recordRequest = <RB>(
     const crypto = yield* Crypto.Crypto;
     const { headers } = request;
     const ip = headers["cf-connecting-ip"];
-    const userAgent = headers["user-agent"];
+    const userAgent = clip(headers["user-agent"], MAX_HEADER_LENGTH);
+    const redact = redactorOf(options.redactPath);
     const receivedAt = DateTime.formatIso(DateTime.makeUnsafe(startedAt));
     const day = receivedAt.slice(0, 10);
     const idSalt = yield* identitySalt(salt, options.identityMode, day);
@@ -71,13 +84,13 @@ const recordRequest = <RB>(
 
     const body = yield* decodeRequestBody(
       withoutUndefined({
-        accept: headers.accept,
-        contentType: response.headers["content-type"],
+        accept: clip(headers.accept, MAX_HEADER_LENGTH),
+        contentType: clip(response.headers["content-type"], MAX_HEADER_LENGTH),
         durationMs: finishedAt - startedAt,
         method: request.method,
-        path: url.pathname,
-        query: options.captureQuery === true ? capturedQuery(url.searchParams) : {},
-        referrer: referrerOf(headers.referer),
+        path: clip(redact(url.pathname), MAX_PATH_LENGTH),
+        query: capturedQuery(url.searchParams, options.captureQuery ?? []),
+        referrer: referrerOf(headers.referer, redact),
         signedAgent: headers["signature-agent"] !== undefined,
         status: response.status,
         type: "request",
@@ -92,7 +105,7 @@ const recordRequest = <RB>(
       server: withoutUndefined({
         ...geo,
         country: isGeoLabel(country) ? country : geo.country,
-        host: options.host ?? headers.host ?? url.host,
+        host: clip(options.host ?? headers.host ?? url.host, MAX_HEADER_LENGTH),
         ipHash: ip === undefined ? undefined : yield* saltedHash(idSalt, ["ip", ip]),
         receivedAt,
         userAgent,
