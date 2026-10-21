@@ -11,6 +11,8 @@ export default defineConfig({
     ".brain/**",
     ".pi/**",
     "**/dist/**",
+    // scripts/consumer-run.mjs runs in a temp project, so it has no local types to lint against.
+    "scripts/**",
   ],
   options: { typeAware: true },
   rules: {

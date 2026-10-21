@@ -21,6 +21,8 @@
         "namespaceImportPackages": ["effect"],
         "allowedUnstableApis": [
           "effect/Arbitrary",
+          "@effect/vitest",
+          "effect/Crypto",
           "effect/http/FetchHttpClient",
           "effect/http/HttpClient",
           "effect/http/HttpClientError",

@@ -45,7 +45,10 @@
     "format": "oxfmt --write src test *.ts *.json AGENTS.md README.md PROVENANCE.md docs pnpm-workspace.yaml",
     "lint": "oxfmt --check src test *.ts *.json AGENTS.md README.md PROVENANCE.md docs pnpm-workspace.yaml && oxlint --type-aware",
     "check": "pnpm typecheck && pnpm lint",
-    "test": "pnpm build && vitest run"
+    "test": "pnpm build && vitest run",
+    "test:consumer": "pnpm build && bash scripts/consumer-test.sh",
+    "test:effect": "bash scripts/test-effect-version.sh",
+    "test:matrix": "pnpm test:effect 4.0.0 && pnpm test:effect 4.0.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261019.1",
