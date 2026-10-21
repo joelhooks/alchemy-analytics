@@ -21,6 +21,13 @@ export const saltedHash = (salt: string, parts: readonly string[]) =>
     return toHex(digest);
   });
 
+/**
+ * The salt for every identifier on an event. Daily mode rotates it each UTC day, so
+ * nothing on a daily-mode event is hashed with the permanent salt.
+ */
+export const identitySalt = (salt: string, mode: IdentityMode, day: string) =>
+  mode === "daily" ? saltedHash(salt, ["day", day]) : Effect.succeed(salt);
+
 export interface VisitorInput {
   readonly cookie: string | undefined;
   readonly day: string;

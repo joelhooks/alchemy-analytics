@@ -8,7 +8,7 @@ import { requestGeoOf } from "./request-geo.js";
 import { RawEventSchema, RequestBodySchema, isGeoLabel } from "./schemas.js";
 import type { IdentityMode } from "./schemas.js";
 import { VisitorSalt } from "./visitor-salt.js";
-import { VISITOR_COOKIE, resolveVisitor, saltedHash } from "./visitor.js";
+import { VISITOR_COOKIE, identitySalt, resolveVisitor, saltedHash } from "./visitor.js";
 import { webCryptoLayer } from "./web-crypto.js";
 
 export interface CaptureOptions<RB> {
@@ -46,6 +46,8 @@ const recordRequest = <RB>(
     const ip = headers["cf-connecting-ip"];
     const userAgent = headers["user-agent"];
     const receivedAt = DateTime.formatIso(DateTime.makeUnsafe(startedAt));
+    const day = receivedAt.slice(0, 10);
+    const idSalt = yield* identitySalt(salt, options.identityMode, day);
     const url = new URL(request.url, "https://localhost");
     const country = headers["cf-ipcountry"];
 
@@ -55,10 +57,10 @@ const recordRequest = <RB>(
 
     const visitor = yield* resolveVisitor({
       cookie: request.cookies[VISITOR_COOKIE],
-      day: receivedAt.slice(0, 10),
+      day,
       ip,
       mode: options.identityMode,
-      salt,
+      salt: idSalt,
       userAgent,
     });
 
@@ -86,7 +88,7 @@ const recordRequest = <RB>(
         ...geo,
         country: isGeoLabel(country) ? country : geo.country,
         host: options.host ?? headers.host ?? url.host,
-        ipHash: ip === undefined ? undefined : yield* saltedHash(salt, ["ip", ip]),
+        ipHash: ip === undefined ? undefined : yield* saltedHash(idSalt, ["ip", ip]),
         receivedAt,
         userAgent,
       }),

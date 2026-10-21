@@ -64,16 +64,21 @@ const fetch = withEventCapture({
 
 The catalog, sink and pipeline are declared at deploy time only. They need `EVENTS_SINK_TOKEN`, an R2 admin read-and-write token, in the deploying process's environment. The token is never bound to the Worker. To declare only the bucket, stream and salt and send nothing, use `basinFoundation({ id })`.
 
+### Identity modes
+
+- `"daily"` sets no cookie. Each UTC day it derives a day salt from the stored salt, `hash(salt, "day", utcDay)`. The anonymous id is a hash of the day salt, IP and user agent, and `ipHash` is a hash of the day salt and IP. Nothing on a daily event is hashed with the permanent salt, so two days of the same visitor share no identifier.
+- `"persistent"` sets a first-party `rat_vid` cookie with a random id on HTML responses. `ipHash` uses the permanent salt, so it stays stable across days.
+
 ### Capture options
 
-| Option            | Default | Meaning                                                                                                                               |
-| ----------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `identityMode`    | —       | `"daily"`: a salted hash of day, IP and user agent, with no cookie. `"persistent"`: a first-party `rat_vid` cookie on HTML responses. |
-| `runInBackground` | —       | Runs the sink write off the response path, e.g. `waitUntil`.                                                                          |
-| `captureCity`     | `false` | Also records `request.cf.city`.                                                                                                       |
-| `captureQuery`    | `false` | Records query values for keys that pass the sensitive-key allow-list. Off records no query at all.                                    |
-| `host`            | request | A fixed service label instead of the request's `Host` header.                                                                         |
-| `skip`            | none    | `(path) => boolean`: paths that are never captured.                                                                                   |
+| Option            | Default | Meaning                                                                                            |
+| ----------------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `identityMode`    | —       | `"daily"` or `"persistent"`. See [Identity modes](#identity-modes).                                |
+| `runInBackground` | —       | Runs the sink write off the response path, e.g. `waitUntil`.                                       |
+| `captureCity`     | `false` | Also records `request.cf.city`.                                                                    |
+| `captureQuery`    | `false` | Records query values for keys that pass the sensitive-key allow-list. Off records no query at all. |
+| `host`            | request | A fixed service label instead of the request's `Host` header.                                      |
+| `skip`            | none    | `(path) => boolean`: paths that are never captured.                                                |
 
 ## Node: a sink that posts to your own Worker
 
