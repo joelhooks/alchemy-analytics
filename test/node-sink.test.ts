@@ -224,6 +224,33 @@ describe("node event sink", () => {
       }),
   );
 
+  it.effect.prop(
+    "the sink refuses any url that would send the secret in clear",
+    {
+      host: Arbitrary.schema(
+        Schema.Literals(["app.example.test", "localhost", "127.0.0.1", "[::1]"]),
+      ),
+      scheme: Arbitrary.schema(Schema.Literals(["https", "http", "ws", "ftp"])),
+    },
+    ({ host, scheme }) =>
+      Effect.gen(function* refuseClearText() {
+        const posted = yield* Ref.make<readonly Posted[]>([]);
+        const url = `${scheme}://${host}/_analytics/ingest`;
+
+        const exit = yield* Effect.exit(
+          Effect.scoped(
+            Layer.build(
+              nodeEventSink(options({ url })).pipe(Layer.provide(recordingClient(posted))),
+            ),
+          ),
+        );
+
+        const safe = scheme === "https" || (scheme === "http" && host !== "app.example.test");
+
+        expect(Exit.isSuccess(exit)).toBe(safe);
+      }),
+  );
+
   it.effect("the background loop flushes on its interval without waiting for close", () =>
     Effect.gen(function* intervalFlush() {
       const posted = yield* Ref.make<readonly Posted[]>([]);

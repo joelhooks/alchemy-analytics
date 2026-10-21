@@ -31,10 +31,31 @@ export interface NodeEventSinkOptions {
 
 const encodeBatch = Schema.encodeEffect(Schema.fromJsonString(IngestBatchSchema));
 
+const LOOPBACK_HOSTS = new Set(["127.0.0.1", "[::1]", "localhost"]);
+
+/** The bearer secret must never travel in clear, so only https or loopback http is allowed. */
+export const isSafeIngestUrl = (url: string) => {
+  if (!URL.canParse(url)) {
+    return false;
+  }
+
+  const { hostname, protocol } = new URL(url);
+
+  return protocol === "https:" || (protocol === "http:" && LOOPBACK_HOSTS.has(hostname));
+};
+
 export const nodeEventSink = (options: NodeEventSinkOptions) =>
   Layer.effect(
     EventSink,
     Effect.gen(function* buildNodeEventSink() {
+      if (!isSafeIngestUrl(options.url)) {
+        return yield* Effect.die(
+          new Error(
+            "NodeEventSink refused its url: the bearer secret would travel in clear. Use an https:// ingest url, or http:// only for localhost, 127.0.0.1 or [::1].",
+          ),
+        );
+      }
+
       const client = HttpClient.filterStatusOk(yield* HttpClient.HttpClient);
       const maxBatch = Math.max(1, options.maxBatch ?? DEFAULT_MAX_BATCH);
 

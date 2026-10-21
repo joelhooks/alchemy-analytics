@@ -126,15 +126,15 @@ const program = Effect.gen(function* () {
 
 `send` puts events in a bounded buffer and returns at once. A background fiber posts batches on an interval. Closing the layer's scope flushes whatever is left. A full buffer drops the new events and logs a warning. A failed or timed-out post logs a warning and drops that batch, with no retry. Closing takes at most `closeTimeout` in total, even against a hung endpoint. After close the queue is shut down, and `send` logs and drops. The caller is never blocked and never fails.
 
-| `NodeEventSink` option | Default        | Meaning                                                                                               |
-| ---------------------- | -------------- | ----------------------------------------------------------------------------------------------------- |
-| `url`                  | —              | The ingest route's full URL                                                                           |
-| `secret`               | —              | Sent as `Authorization: Bearer <secret>`                                                              |
-| `maxBuffer`            | `1000`         | Events held before new ones are dropped                                                               |
-| `maxBatch`             | `100`          | Events per POST. Keep it at or under the route's `maxEvents`                                          |
-| `flushInterval`        | `"5 seconds"`  | Time between background posts                                                                         |
-| `requestTimeout`       | `"10 seconds"` | Per-POST timeout                                                                                      |
-| `closeTimeout`         | `"10 seconds"` | Total time scope close may spend stopping the loop and flushing. Unsent events after that are dropped |
+| `NodeEventSink` option | Default        | Meaning                                                                                                                                                                             |
+| ---------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`                  | —              | The ingest route's full URL. It must be `https://`, or `http://` only for `localhost`, `127.0.0.1` or `[::1]`. Any other url makes the layer fail at build, before a secret is sent |
+| `secret`               | —              | Sent as `Authorization: Bearer <secret>`                                                                                                                                            |
+| `maxBuffer`            | `1000`         | Events held before new ones are dropped                                                                                                                                             |
+| `maxBatch`             | `100`          | Events per POST. Keep it at or under the route's `maxEvents`                                                                                                                        |
+| `flushInterval`        | `"5 seconds"`  | Time between background posts                                                                                                                                                       |
+| `requestTimeout`       | `"10 seconds"` | Per-POST timeout                                                                                                                                                                    |
+| `closeTimeout`         | `"10 seconds"` | Total time scope close may spend stopping the loop and flushing. Unsent events after that are dropped                                                                               |
 
 Use `nodeEventSink(options)` to supply your own `HttpClient`. `NodeEventSink` provides the fetch client.
 
