@@ -144,7 +144,7 @@ The route checks in this order, and it reads the body only after authentication 
 
 1. Anything except `POST` gets `405`.
 2. A missing or wrong bearer secret gets `401`. The comparison runs in constant time over SHA-256 digests, and the body is never read.
-3. A declared `Content-Length` over `maxBodyBytes` gets `413` before the body is read.
+3. A declared `Content-Length` over `maxBodyBytes` gets `413` before the body is read. A header that is not plain decimal digits is ignored, and the streamed count decides.
 4. The body is streamed and counted. Once it passes `maxBodyBytes`, the route stops reading and returns `413`.
 5. A batch with more than `maxEvents` events gets `413`, and none of it is written.
 6. Any invalid event gets `400`, and none of the batch is written.

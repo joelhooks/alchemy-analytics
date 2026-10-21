@@ -61,10 +61,14 @@ export const secretMatches = (presented: string, secret: Redacted.Redacted) =>
     Effect.orElseSucceed(() => false),
   );
 
+const DECIMAL = /^\d+$/u;
+
 const declaredLength = (header: string | undefined) => {
   const length = Number(header);
 
-  return header !== undefined && Number.isSafeInteger(length) && length >= 0 ? length : undefined;
+  return header !== undefined && DECIMAL.test(header) && Number.isSafeInteger(length)
+    ? length
+    : undefined;
 };
 
 const readCapped = (request: HttpServerRequest.HttpServerRequest, maxBytes: number) =>

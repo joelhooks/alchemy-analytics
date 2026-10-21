@@ -258,6 +258,28 @@ describe("ingest route", () => {
       }),
   );
 
+  it.effect.prop(
+    "a Content-Length that is not plain decimal is ignored, and the streamed cap decides",
+    {
+      header: Arbitrary.schema(Schema.Literals(["1e9", "0x40000000", "2e7", "1.0e8", "+9e9"])),
+    },
+    ({ header }) =>
+      Effect.gen(function* nonDecimalLength() {
+        const events = yield* sampleEvents(2, 7);
+
+        const response = yield* handle(
+          trackedRequest(
+            URL_,
+            { authorization: bearer, "content-length": header },
+            textChunks(batchJson(events), 64),
+          ),
+        );
+
+        expect(response.status).toBe(202);
+        expect(batchJson(yield* recorded)).toBe(batchJson(events));
+      }).pipe(Effect.provide(memoryEventsLayer("salt"))),
+  );
+
   it.effect("the default limits reject one event and one byte past them", () =>
     Effect.gen(function* defaultLimits() {
       const [event] = yield* sampleEvents(1, 11);
