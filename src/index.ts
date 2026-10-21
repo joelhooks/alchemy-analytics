@@ -12,6 +12,8 @@ export { EventSinkError } from "./event-sink-error.js";
 
 export { VisitorSalt } from "./visitor-salt.js";
 
+export { VISITOR_COOKIE } from "./visitor.js";
+
 export { redactIdSegments } from "./request-facts.js";
 
 export type { PathRedaction } from "./request-facts.js";

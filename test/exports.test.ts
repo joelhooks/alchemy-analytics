@@ -15,6 +15,7 @@ const PUBLIC_SURFACE = [
   "RequestBodySchema",
   "RequestGeoSchema",
   "ServerContextSchema",
+  "VISITOR_COOKIE",
   "VisitorSalt",
   "captureEvent",
   "fromRawEvent",
