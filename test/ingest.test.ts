@@ -287,11 +287,23 @@ describe("ingest route", () => {
           [],
         );
 
-        const response = yield* withIngestRoute({ secret: SECRET })(
+        const app = withIngestRoute({ secret: SECRET })(
           Effect.succeed(HttpServerResponse.text("app", { status: 299 })),
-        ).pipe(Effect.provideService(HttpServerRequest.HttpServerRequest, tracked.request));
+        );
+
+        const response = yield* app.pipe(
+          Effect.provideService(HttpServerRequest.HttpServerRequest, tracked.request),
+        );
+
+        const malformed = yield* app.pipe(
+          Effect.provideService(
+            HttpServerRequest.HttpServerRequest,
+            tracked.request.modify({ url: "//" }),
+          ),
+        );
 
         expect(response.status).toBe(onIngest ? 401 : 299);
+        expect(malformed.status).toBe(299);
       }).pipe(Effect.provide(memoryEventsLayer("salt"))),
   );
 });

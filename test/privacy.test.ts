@@ -7,6 +7,7 @@ import * as HttpServerResponse from "effect/http/HttpServerResponse";
 import { RawEventSchema, VISITOR_COOKIE, isSensitiveKey, withEventCapture } from "../src/index.js";
 import { EventSinkMemory, memoryEventsLayer } from "../src/memory.js";
 import { queryKey, word } from "./arbitraries.js";
+import { withBackground } from "./support.js";
 
 const hex = Arbitrary.schema(
   Schema.Literals(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]),
@@ -111,18 +112,20 @@ describe("privacy", () => {
     { leaky: leakyRequest },
     ({ leaky }) =>
       Effect.gen(function* neverLeak() {
-        yield* withEventCapture({
-          captureQuery: leaky.shape.captureQuery,
-          identityMode: leaky.shape.mode,
-          runInBackground: (effect) => effect,
-        })(
-          Effect.succeed(
-            HttpServerResponse.text(`private ${leaky.responseSecret}`, {
-              contentType: leaky.shape.html ? "text/html" : "application/json",
-              headers: { "x-response-token": leaky.responseSecret },
-            }),
-          ),
-        ).pipe(Effect.provideService(HttpServerRequest.HttpServerRequest, requestOf(leaky)));
+        yield* withBackground((runInBackground) =>
+          withEventCapture({
+            captureQuery: leaky.shape.captureQuery,
+            identityMode: leaky.shape.mode,
+            runInBackground,
+          })(
+            Effect.succeed(
+              HttpServerResponse.text(`private ${leaky.responseSecret}`, {
+                contentType: leaky.shape.html ? "text/html" : "application/json",
+                headers: { "x-response-token": leaky.responseSecret },
+              }),
+            ),
+          ).pipe(Effect.provideService(HttpServerRequest.HttpServerRequest, requestOf(leaky))),
+        );
 
         const events = yield* (yield* EventSinkMemory).events;
 

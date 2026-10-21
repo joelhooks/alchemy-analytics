@@ -10,6 +10,7 @@ import type { IdentityMode, RawEvent } from "../src/index.js";
 import { EventSinkMemory, memoryEventsLayer } from "../src/memory.js";
 import { resolveVisitor, saltedHash } from "../src/visitor.js";
 import { webCryptoLayer } from "../src/web-crypto.js";
+import { withBackground } from "./support.js";
 
 const Visit = Schema.Struct({
   device: Schema.Literals([0, 1, 2]),
@@ -105,15 +106,17 @@ const visitAt = (time: number, device: (typeof devices)[number]) =>
   Effect.gen(function* visit() {
     yield* TestClock.setTime(time);
 
-    yield* withEventCapture({ identityMode: "daily", runInBackground: (effect) => effect })(
-      Effect.succeed(HttpServerResponse.text("ok")),
-    ).pipe(
-      Effect.provideService(
-        HttpServerRequest.HttpServerRequest,
-        HttpServerRequest.fromWeb(
-          new Request("https://app.example.test/", {
-            headers: { "cf-connecting-ip": device.ip, "user-agent": device.userAgent },
-          }),
+    yield* withBackground((runInBackground) =>
+      withEventCapture({ identityMode: "daily", runInBackground })(
+        Effect.succeed(HttpServerResponse.text("ok")),
+      ).pipe(
+        Effect.provideService(
+          HttpServerRequest.HttpServerRequest,
+          HttpServerRequest.fromWeb(
+            new Request("https://app.example.test/", {
+              headers: { "cf-connecting-ip": device.ip, "user-agent": device.userAgent },
+            }),
+          ),
         ),
       ),
     );

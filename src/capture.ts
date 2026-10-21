@@ -1,4 +1,5 @@
 import { Clock, Crypto, DateTime, Effect, Schema } from "effect";
+import type { Duration } from "effect";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
 
@@ -14,11 +15,15 @@ import { webCryptoLayer } from "./web-crypto.js";
 export interface CaptureOptions<RB> {
   readonly captureCity?: boolean;
   readonly captureQuery?: boolean;
+  /** Longest time capture may hold the response. Defaults to 250 ms. */
+  readonly captureTimeout?: Duration.Input;
   readonly host?: string;
   readonly identityMode: IdentityMode;
   readonly runInBackground: (effect: Effect.Effect<void>) => Effect.Effect<void, never, RB>;
   readonly skip?: (path: string) => boolean;
 }
+
+export const DEFAULT_CAPTURE_TIMEOUT: Duration.Input = "250 millis";
 
 const VISITOR_COOKIE_MAX_AGE = "400 days";
 
@@ -97,10 +102,13 @@ const recordRequest = <RB>(
     });
 
     yield* options.runInBackground(
-      sink.send([event]).pipe(
-        Effect.tapError((error) => Effect.logWarning("event sink rejected a request event", error)),
-        Effect.ignore,
-      ),
+      sink
+        .send([event])
+        .pipe(
+          Effect.catchCause((cause) =>
+            Effect.logWarning("event sink rejected a request event", cause),
+          ),
+        ),
     );
 
     return visitor.issueCookie && isHtml(response)
@@ -114,13 +122,22 @@ const recordRequest = <RB>(
       : response;
   }).pipe(Effect.provide(webCryptoLayer));
 
+const shouldSkip = <RB>(options: CaptureOptions<RB>, url: string) =>
+  options.skip === undefined
+    ? Effect.succeed(false)
+    : Effect.try(() => options.skip?.(new URL(url, "https://localhost").pathname) === true).pipe(
+        Effect.catchCause((cause) =>
+          Effect.logWarning("event capture could not apply skip", cause).pipe(Effect.as(false)),
+        ),
+      );
+
 export const withEventCapture =
   <RB>(options: CaptureOptions<RB>) =>
   <E, R>(app: Effect.Effect<HttpServerResponse.HttpServerResponse, E, R>) =>
     Effect.gen(function* captureRequest() {
       const request = yield* HttpServerRequest.HttpServerRequest;
 
-      if (options.skip?.(new URL(request.url, "https://localhost").pathname) === true) {
+      if (yield* shouldSkip(options, request.url)) {
         return yield* app;
       }
 
@@ -129,6 +146,10 @@ export const withEventCapture =
       const finishedAt = yield* Clock.currentTimeMillis;
 
       return yield* recordRequest(options, request, response, startedAt, finishedAt).pipe(
+        Effect.timeoutOrElse({
+          duration: options.captureTimeout ?? DEFAULT_CAPTURE_TIMEOUT,
+          orElse: () => Effect.logWarning("event capture timed out").pipe(Effect.as(response)),
+        }),
         Effect.catchCause((cause) =>
           Effect.logWarning("event capture failed", cause).pipe(Effect.as(response)),
         ),

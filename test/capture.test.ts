@@ -13,9 +13,10 @@ import {
   VisitorSalt,
   withEventCapture,
 } from "../src/index.js";
-import type { IdentityMode, RawEvent } from "../src/index.js";
+import type { RawEvent } from "../src/index.js";
 import { EventSinkMemory, memoryEventsLayer } from "../src/memory.js";
 import { queryPairs, word } from "./arbitraries.js";
+import { withBackground } from "./support.js";
 
 const Exchange = Schema.Struct({
   html: Schema.Boolean,
@@ -95,20 +96,12 @@ const appFor = (generated: Generated) =>
     }),
   );
 
-const capture = (mode: IdentityMode, captureCity = false) =>
-  withEventCapture({
-    captureCity,
-    identityMode: mode,
-    runInBackground: (effect) => effect,
-  });
-
 const respond = (generated: Generated, cf = false, captureCity = false) =>
-  capture(
-    generated.scenario.mode,
-    captureCity,
-  )(appFor(generated)).pipe(
-    Effect.provideService(HttpServerRequest.HttpServerRequest, requestFor(generated, cf)),
-  );
+  withBackground((runInBackground) =>
+    withEventCapture({ captureCity, identityMode: generated.scenario.mode, runInBackground })(
+      appFor(generated),
+    ).pipe(Effect.provideService(HttpServerRequest.HttpServerRequest, requestFor(generated, cf))),
+  ).pipe(Effect.flatMap(({ exit }) => exit));
 
 const onlyEvent = (events: readonly RawEvent[]) =>
   events.length === 1 && events[0] !== undefined

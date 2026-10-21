@@ -1,4 +1,4 @@
-import { Effect, Layer, Redacted, Schema } from "effect";
+import { Effect, Fiber, Layer, Redacted, Schema } from "effect";
 import * as Arbitrary from "effect/Arbitrary";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 
@@ -91,3 +91,35 @@ export const brokenSink = (failure: SinkFailure) =>
           : Effect.succeed("property-salt"),
     }),
   );
+
+/**
+ * A `runInBackground` that behaves like `waitUntil`: it forks the effect off the
+ * response path and returns at once. `settle` waits for every forked effect and
+ * returns their exits, so a test can see a background failure the response never would.
+ */
+export const makeBackground = Effect.sync(() => {
+  const fibers: Fiber.Fiber<void>[] = [];
+
+  return {
+    run: (effect: Effect.Effect<void>) =>
+      Effect.forkDetach(effect).pipe(
+        Effect.flatMap((fiber) => Effect.sync(() => fibers.push(fiber))),
+        Effect.asVoid,
+      ),
+    settle: Effect.suspend(() => Fiber.awaitAll(fibers.splice(0))),
+  };
+});
+
+/** Runs a captured handler with a deferred background and waits for the background. */
+export const withBackground = <A, E, R>(
+  handler: (
+    runInBackground: (effect: Effect.Effect<void>) => Effect.Effect<void>,
+  ) => Effect.Effect<A, E, R>,
+) =>
+  Effect.gen(function* runWithBackground() {
+    const background = yield* makeBackground;
+    const exit = yield* Effect.exit(handler(background.run));
+    const exits = yield* background.settle;
+
+    return { exit, exits };
+  });

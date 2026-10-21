@@ -179,7 +179,9 @@ export const withIngestRoute =
   <E, R>(app: Effect.Effect<HttpServerResponse.HttpServerResponse, E, R>) =>
     Effect.gen(function* routeIngest() {
       const request = yield* HttpServerRequest.HttpServerRequest;
-      const { pathname } = new URL(request.url, "https://localhost");
+      const pathname = URL.canParse(request.url, "https://localhost")
+        ? new URL(request.url, "https://localhost").pathname
+        : undefined;
 
       return pathname === (options.path ?? INGEST_PATH) ? yield* ingestEvents(options) : yield* app;
     });

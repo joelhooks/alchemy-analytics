@@ -71,14 +71,15 @@ The catalog, sink and pipeline are declared at deploy time only. They need `EVEN
 
 ### Capture options
 
-| Option            | Default | Meaning                                                                                            |
-| ----------------- | ------- | -------------------------------------------------------------------------------------------------- |
-| `identityMode`    | —       | `"daily"` or `"persistent"`. See [Identity modes](#identity-modes).                                |
-| `runInBackground` | —       | Runs the sink write off the response path, e.g. `waitUntil`.                                       |
-| `captureCity`     | `false` | Also records `request.cf.city`.                                                                    |
-| `captureQuery`    | `false` | Records query values for keys that pass the sensitive-key allow-list. Off records no query at all. |
-| `host`            | request | A fixed service label instead of the request's `Host` header.                                      |
-| `skip`            | none    | `(path) => boolean`: paths that are never captured.                                                |
+| Option            | Default      | Meaning                                                                                                                                          |
+| ----------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `identityMode`    | —            | `"daily"` or `"persistent"`. See [Identity modes](#identity-modes).                                                                              |
+| `runInBackground` | —            | Runs the sink write off the response path, e.g. `waitUntil`. It should fork and return, not await the sink.                                      |
+| `captureTimeout`  | `250 millis` | The longest capture may hold the response. On timeout the response goes out unchanged and the event is dropped. Named `DEFAULT_CAPTURE_TIMEOUT`. |
+| `captureCity`     | `false`      | Also records `request.cf.city`.                                                                                                                  |
+| `captureQuery`    | `false`      | Records query values for keys that pass the sensitive-key allow-list. Off records no query at all.                                               |
+| `host`            | request      | A fixed service label instead of the request's `Host` header.                                                                                    |
+| `skip`            | none         | `(path) => boolean`: paths that are never captured.                                                                                              |
 
 ## Node: a sink that posts to your own Worker
 
@@ -208,12 +209,15 @@ A property test sends generated requests that carry secrets in every one of thos
 
 ## Capture-first guarantees
 
-- `withEventCapture` returns the app's response with byte-identical status, headers and body, whatever the sink does. The only thing it adds is the visitor cookie in `persistent` mode.
+- `withEventCapture` returns the app's response with byte-identical status, headers and body, whatever the sink or salt does. The only thing it adds is the visitor cookie in `persistent` mode.
+- Capture holds the response for at most `captureTimeout`, even when the salt or sink never answers.
+- A malformed request target or a throwing `skip` is logged, and the response goes out unchanged.
+- A sink failure or defect inside `runInBackground` is caught and logged there, so it never fails the background task.
 - An app failure passes through unchanged.
 - `captureEvent` always succeeds for its caller.
 - `NodeEventSink.send` never fails and never waits on the network.
 
-Model tests drive these guarantees with failing and throwing sinks, a throwing salt, and a refused, erroring or hanging ingest route. Each guard was also broken on purpose to confirm a test catches it.
+Model tests drive these guarantees with failing, throwing and hanging sinks, throwing and hanging salts, malformed request targets, and a refused, erroring or hanging ingest route. The tests run `runInBackground` as a real fork, the way `waitUntil` does. Each guard was also broken on purpose to confirm a test catches it.
 
 ## Development
 

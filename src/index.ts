@@ -1,4 +1,4 @@
-export { withEventCapture } from "./capture.js";
+export { DEFAULT_CAPTURE_TIMEOUT, withEventCapture } from "./capture.js";
 
 export type { CaptureOptions } from "./capture.js";
 

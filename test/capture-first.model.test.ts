@@ -1,13 +1,19 @@
 import { describe, expect, it } from "@effect/vitest";
-import { Effect, Exit, Schema } from "effect";
+import { Clock, Effect, Exit, Layer, Schema } from "effect";
 import * as Arbitrary from "effect/Arbitrary";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
 
-import { VISITOR_COOKIE, captureEvent, withEventCapture } from "../src/index.js";
+import {
+  EventSink,
+  VISITOR_COOKIE,
+  VisitorSalt,
+  captureEvent,
+  withEventCapture,
+} from "../src/index.js";
 import { memoryEventsLayer } from "../src/memory.js";
 import { queryPairs, word } from "./arbitraries.js";
-import { SinkFailureSchema, brokenSink } from "./support.js";
+import { SinkFailureSchema, brokenSink, withBackground } from "./support.js";
 
 const Scenario = Schema.Struct({
   binary: Schema.Boolean,
@@ -93,14 +99,92 @@ const snapshot = (response: HttpServerResponse.HttpServerResponse) =>
   });
 
 const captured = (generated: Generated) =>
-  withEventCapture({
-    identityMode: generated.scenario.mode,
-    runInBackground: (effect) => effect,
-  })(Effect.succeed(responseFor(generated))).pipe(
-    Effect.provideService(HttpServerRequest.HttpServerRequest, requestFor(generated)),
+  withBackground((runInBackground) =>
+    withEventCapture({ identityMode: generated.scenario.mode, runInBackground })(
+      Effect.succeed(responseFor(generated)),
+    ).pipe(Effect.provideService(HttpServerRequest.HttpServerRequest, requestFor(generated))),
   );
 
+const HangSchema = Schema.Literals(["salt", "sinkAwaited", "sinkDeferred"]);
+
+const hungLayer = (hang: typeof HangSchema.Type) =>
+  Layer.mergeAll(
+    Layer.succeed(EventSink, {
+      send: () => (hang === "salt" ? Effect.void : Effect.never),
+    }),
+    Layer.succeed(VisitorSalt, {
+      salt: hang === "salt" ? Effect.never : Effect.succeed("salt"),
+    }),
+  );
+
+const malformedTarget = Arbitrary.schema(Schema.Literals(["//", "///", "//a b/", "https://"]));
+
 describe("capture first", () => {
+  it.live.prop(
+    "a hung salt or sink never holds the response past the capture timeout",
+    { generated: exchange, hang: Arbitrary.schema(HangSchema) },
+    ({ generated, hang }) =>
+      Effect.gen(function* hungCapture() {
+        const bare = yield* snapshot(responseFor(generated));
+        const started = yield* Clock.currentTimeMillis;
+
+        const response = yield* withEventCapture({
+          identityMode: generated.scenario.mode,
+          runInBackground:
+            hang === "sinkDeferred"
+              ? (effect) => Effect.forkDetach(effect).pipe(Effect.asVoid)
+              : (effect) => effect,
+        })(Effect.succeed(responseFor(generated))).pipe(
+          Effect.provideService(HttpServerRequest.HttpServerRequest, requestFor(generated)),
+          Effect.provide(hungLayer(hang)),
+          Effect.timeout("2 seconds"),
+        );
+
+        const elapsed = (yield* Clock.currentTimeMillis) - started;
+        const seen = yield* snapshot(response);
+
+        expect(elapsed).toBeLessThan(1000);
+        expect(seen.body).toStrictEqual(bare.body);
+        expect(seen.headers).toStrictEqual(bare.headers);
+        expect(seen.status).toBe(bare.status);
+      }),
+    { arbitrary: { runs: 12 } },
+  );
+
+  it.effect.prop(
+    "a malformed request target or a throwing skip never defects into the caller",
+    { generated: exchange, target: malformedTarget, throws: Arbitrary.schema(Schema.Boolean) },
+    ({ generated, target, throws }) =>
+      Effect.gen(function* malformedRequest() {
+        const bare = yield* snapshot(responseFor(generated));
+
+        const { exit } = yield* withBackground((runInBackground) =>
+          withEventCapture({
+            identityMode: generated.scenario.mode,
+            runInBackground,
+            skip: (path) => {
+              if (throws) {
+                throw new Error(`skip threw on ${path}`);
+              }
+
+              return false;
+            },
+          })(Effect.succeed(responseFor(generated))).pipe(
+            Effect.provideService(
+              HttpServerRequest.HttpServerRequest,
+              requestFor(generated).modify({ url: target }),
+            ),
+          ),
+        ).pipe(Effect.provide(memoryEventsLayer("salt")));
+
+        expect(Exit.isSuccess(exit)).toBe(true);
+
+        if (Exit.isSuccess(exit)) {
+          expect((yield* snapshot(exit.value)).body).toStrictEqual(bare.body);
+        }
+      }),
+  );
+
   it.effect.prop(
     "a broken sink or salt never changes the status, headers or body bytes, and the caller still succeeds",
     { generated: exchange },
@@ -109,14 +193,15 @@ describe("capture first", () => {
         const bare = yield* snapshot(responseFor(generated));
 
         const healthy = yield* snapshot(
-          yield* captured(generated).pipe(Effect.provide(memoryEventsLayer("salt"))),
+          yield* (yield* captured(generated).pipe(Effect.provide(memoryEventsLayer("salt")))).exit,
         );
 
-        const exit = yield* Effect.exit(
-          captured(generated).pipe(Effect.provide(brokenSink(generated.failure))),
+        const { exit, exits } = yield* captured(generated).pipe(
+          Effect.provide(brokenSink(generated.failure)),
         );
 
         expect(Exit.isSuccess(exit)).toBe(true);
+        expect(exits.filter(Exit.isFailure)).toStrictEqual([]);
 
         if (Exit.isSuccess(exit)) {
           const broken = yield* snapshot(exit.value);
@@ -137,15 +222,11 @@ describe("capture first", () => {
     { failure: Arbitrary.schema(SinkFailureSchema), generated: exchange, reason: word },
     ({ failure, generated, reason }) =>
       Effect.gen(function* appFailure() {
-        const exit = yield* Effect.exit(
-          withEventCapture({
-            identityMode: generated.scenario.mode,
-            runInBackground: (effect) => effect,
-          })(Effect.fail({ reason })).pipe(
-            Effect.provideService(HttpServerRequest.HttpServerRequest, requestFor(generated)),
-            Effect.provide(brokenSink(failure)),
-          ),
-        );
+        const { exit } = yield* withBackground((runInBackground) =>
+          withEventCapture({ identityMode: generated.scenario.mode, runInBackground })(
+            Effect.fail({ reason }),
+          ).pipe(Effect.provideService(HttpServerRequest.HttpServerRequest, requestFor(generated))),
+        ).pipe(Effect.provide(brokenSink(failure)));
 
         expect(exit).toStrictEqual(Exit.fail({ reason }));
       }),
