@@ -9,7 +9,7 @@ Capture never changes a response or a caller's result. A broken sink is logged a
 ## Install
 
 ```sh
-pnpm add alchemy-analytics effect@4.0.5
+pnpm add alchemy-analytics effect@4.0.6
 # Workers that declare infrastructure also need Alchemy:
 pnpm add alchemy@2.0.0-beta.83
 ```
