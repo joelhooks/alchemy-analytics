@@ -48,16 +48,17 @@
     "test": "pnpm build && vitest run",
     "test:consumer": "pnpm build && bash scripts/consumer-test.sh",
     "test:effect": "bash scripts/test-effect-version.sh",
-    "test:matrix": "pnpm test:effect 4.0.0 && pnpm test:effect 4.0.6"
+    "test:matrix": "pnpm test:effect 4.1.2"
   },
   "devDependencies": {
+    "@alchemy.run/cloudflare": "2.0.0-beta.85",
     "@cloudflare/workers-types": "5.20261019.1",
-    "@effect/platform-node": "4.0.0",
+    "@effect/platform-node": "4.1.2",
     "@effect/tsgo": "0.54.0",
-    "@effect/vitest": "4.0.0",
+    "@effect/vitest": "4.1.2",
     "@types/node": "24.19.2",
-    "alchemy": "2.0.0-beta.83",
-    "effect": "4.0.0",
+    "alchemy": "2.0.0-beta.85",
+    "effect": "4.1.2",
     "oxfmt": "0.73.0",
     "oxlint": "1.88.0",
     "oxlint-tsgolint": "7.0.2004",
@@ -66,10 +67,14 @@
     "vitest": "5.0.5"
   },
   "peerDependencies": {
-    "alchemy": "2.0.0-beta.83",
-    "effect": ">=4.0.0 <4.1.0"
+    "@alchemy.run/cloudflare": "2.0.0-beta.85",
+    "alchemy": "2.0.0-beta.85",
+    "effect": ">=4.1.2 <4.2.0"
   },
   "peerDependenciesMeta": {
+    "@alchemy.run/cloudflare": {
+      "optional": true
+    },
     "alchemy": {
       "optional": true
     }

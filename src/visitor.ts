@@ -1,4 +1,5 @@
-import { Crypto, Effect, Schema } from "effect";
+import { Effect, Schema } from "effect";
+import * as Digest from "effect/crypto/Digest";
 
 import { AnonymousIdSchema } from "./schemas.js";
 import type { AnonymousId, IdentityMode } from "./schemas.js";
@@ -8,18 +9,13 @@ export const VISITOR_COOKIE = "rat_vid";
 
 const encoder = new TextEncoder();
 
-const toHex = (bytes: Uint8Array) =>
-  [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-
 const isUuid = Schema.is(Schema.String.check(Schema.isUUID()));
 
 export const saltedHash = (salt: string, parts: readonly string[]) =>
   Effect.gen(function* hashWithSalt() {
-    const crypto = yield* Crypto.Crypto;
+    const digest = yield* Digest.Digest;
 
-    const digest = yield* crypto.digest("SHA-256", encoder.encode([salt, ...parts].join("\u0000")));
-
-    return toHex(digest);
+    return yield* digest.digestHex(Digest.sha256, encoder.encode([salt, ...parts].join("\u0000")));
   });
 
 /**
