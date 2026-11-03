@@ -1,4 +1,5 @@
-import { Crypto, Effect, Redacted, Schema, Stream } from "effect";
+import { Effect, Redacted, Schema, Stream } from "effect";
+import * as Digest from "effect/crypto/Digest";
 import * as HttpServerRequest from "effect/http/HttpServerRequest";
 import * as HttpServerResponse from "effect/http/HttpServerResponse";
 
@@ -40,11 +41,11 @@ const bearerOf = (header: string | undefined) =>
 
 export const secretMatches = (presented: string, secret: Redacted.Redacted) =>
   Effect.gen(function* compareSecrets() {
-    const crypto = yield* Crypto.Crypto;
+    const digest = yield* Digest.Digest;
 
     const [left, right] = yield* Effect.all([
-      crypto.digest("SHA-256", encoder.encode(presented)),
-      crypto.digest("SHA-256", encoder.encode(Redacted.value(secret))),
+      digest.digest(Digest.sha256, encoder.encode(presented)),
+      digest.digest(Digest.sha256, encoder.encode(Redacted.value(secret))),
     ]);
 
     // oxlint-disable-next-line eslint/no-bitwise -- constant-time digest comparison needs XOR accumulation.

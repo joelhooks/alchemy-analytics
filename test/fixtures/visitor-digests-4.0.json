@@ -1,0 +1,608 @@
+{
+  "capturedWith": {
+    "commit": "9d9c3e1",
+    "effect": "4.0.0"
+  },
+  "salted": [
+    {
+      "salt": "/:日=日",
+      "parts": ["_|aZ\u0000 =日a/a😀\u0000"],
+      "hex": "f56645f2443d4921576f12bc4587bf3eed1d6196685803ed90ffd716d001950a"
+    },
+    {
+      "salt": "aZ0",
+      "parts": ["/​é​😀a日_%本", "", "é本😀_éa😀0|\u0000éß😀ß/"],
+      "hex": "40ae09ed27a9adfe79f6d577ac34123d83c2f52c0fc36c872ef28db5c5e33591"
+    },
+    {
+      "salt": "日0/\u0000é:Zß%:%a|ß \u0000 = \u0000Z",
+      "parts": ["​"],
+      "hex": "d4ca8534eddc3a1de76d39badc1089fca9db30872167278e3615596c75753880"
+    },
+    {
+      "salt": ":/​é本|=/ß😀:Z: 0%本Z",
+      "parts": [],
+      "hex": "c46e00e7714bd75530084988a2e44dd2cbbfc0a3f5fb78c7cccc2d72abbef8c3"
+    },
+    {
+      "salt": "aZ本 _😀:/_%a \u0000",
+      "parts": ["ZaZa|0😀:Zß/", "-aé_ _日​/=/"],
+      "hex": "cc1164349a6bb84d4e65d53ad9ed94635cc724b622a733b69da1d9083e44bb0d"
+    },
+    {
+      "salt": "日a😀0😀本/ß-a/_|_%​-​",
+      "parts": [],
+      "hex": "5a50c337b63b5c4127b50e340f0db7b0cc4378a7272e649eb000ebd3da953207"
+    },
+    {
+      "salt": "|_é: ",
+      "parts": [":%本é0😀​/0/ß"],
+      "hex": "1b53a200cf105fc432ce8fe19fca7fe88a75c579edcc47033c95d9267424529c"
+    },
+    {
+      "salt": ":/​é0日0/ßZ0/= =",
+      "parts": ["é=", "​/​|0é: ​😀\u0000%_"],
+      "hex": "e2b76ae775025e455d57278b4ec046a028fa9a1be79d77c55c28d3a23a5c5021"
+    },
+    {
+      "salt": "=/\u0000Z本é​Za😀​😀ß%\u0000|​%ß日_",
+      "parts": [" ​ ​😀0|a/", "é本|", "/:日0%aé_😀a/:日ß-", " ​-:日a|0/"],
+      "hex": "a9a9f914b854834e9dc531e0533c760c8a6344da9e0f7787dcb3a0a8f93ef7ee"
+    },
+    {
+      "salt": "😀ß/",
+      "parts": [],
+      "hex": "4f4eadb2d1fa5225c1e68b1270f2ec1c262721df53e48c83cc5c80851171fbf0"
+    },
+    {
+      "salt": "本|=日_é0|​%=",
+      "parts": ["|本 0-本%本 ß-_😀_/:", ":é=é0😀= a =😀:Z="],
+      "hex": "258ea38f467b4e4190864b035f94a3ddce3834b6dad0c045d74252a981d7e1f7"
+    },
+    {
+      "salt": "=|",
+      "parts": [],
+      "hex": "3d5f076b6d10c30292736a7db19ad9f733d34eda6b1d6f8ce774be2aa0c2595d"
+    },
+    {
+      "salt": ":",
+      "parts": [],
+      "hex": "e7ac0786668e0ff0f02b62bd04f45ff636fd82db63b1104601c975dc005f3a67"
+    },
+    {
+      "salt": "😀​%_%​éßéa/0|​/_Z本",
+      "parts": ["/ß%​Za", "_/:%=%=-ß日0😀本Z"],
+      "hex": "32e676105ada0c00af8bb80ef9448115712963a319dd33d32850c90615389b33"
+    },
+    {
+      "salt": "%本|​日0 \u0000-a",
+      "parts": ["/_Za😀_|\u0000日_", "本éß/a日a%_ 本", "本😀ß/本é", "/​-​|ß日本|a/a日_Z"],
+      "hex": "2a46365fc9a4444b8d56e51bdf189a8c6cd33e1db686c271d634b721b0230985"
+    },
+    {
+      "salt": "|本%:%ß/_",
+      "parts": ["/ß😀: a%:日ßZ"],
+      "hex": "b20f3fe92448e0b1762af2465db537bdfb3955f2ceb3658e170a53e38fbe978a"
+    },
+    {
+      "salt": "Z\u0000日:",
+      "parts": ["%ß|:/_Z:%本😀", " 0|本|​%0|​|\u0000日​", "本|​😀ß😀=é​-=", "0Z_/_"],
+      "hex": "c3c7867e99b35502c495714fdb5bc0a0af7b57310a9c4c2e6888aff822148742"
+    },
+    {
+      "salt": "aZa%:é本|=-本",
+      "parts": ["Z_|_/_😀", "Z_日0Z_😀​/ß", "", "é_日"],
+      "hex": "b06532ce4c80ffa246dd32c1e07284506c21d36d3f502649a941110b560d404d"
+    },
+    {
+      "salt": "/\u0000",
+      "parts": [
+        "-\u0000éaZ\u0000-: ​é_%ß",
+        "本日本日本日=日",
+        "-ßZ0/​/0 =|\u0000😀",
+        "日a日本é\u0000😀a日_é​😀0"
+      ],
+      "hex": "617c5b7d62283637d5420394b485f14c5795c7ebc06973c0c8f4727821bfc496"
+    },
+    {
+      "salt": "​😀:é​日a😀\u0000é_Z​😀0 =-",
+      "parts": ["0Z=-本 0", "本Z0éa-​"],
+      "hex": "b3828a62d68760716af2ec44beb8db78fd932418374d39e98f26fc711177b67e"
+    },
+    {
+      "salt": "本 =Z​|_|=😀0日a😀aZ",
+      "parts": ["​😀​-ß :😀ß ß-", "😀=%0%\u0000Z0 ß-ß "],
+      "hex": "2cf24cfb009fd9a0395a88888709e35377c93513da40948921f0b1522bb77abc"
+    },
+    {
+      "salt": "-​%0é0é",
+      "parts": [],
+      "hex": "7a859f48becb9c958b1a87aca39c33e1aba7a721611dd8dcd9ad6e9412ce5b66"
+    },
+    {
+      "salt": "\u0000/本 ß/本😀\u0000é:日a : ​",
+      "parts": ["日\u0000Z: ", "", "=日a|_/​/ß/_😀:"],
+      "hex": "7bfef2fe3ad969ec56c4da5cea957e9ee445d8f6153b692730e44bb22aedc6ba"
+    },
+    {
+      "salt": "a😀_/",
+      "parts": ["ß \u0000Z:日​|0%0"],
+      "hex": "9ae3ad9c9e48b08b5391a66aca9954ff335cd3fa7ed7ac832fa5810bd3954b30"
+    },
+    {
+      "salt": "0😀本日​😀\u0000/_日:é​ 本|:-​|",
+      "parts": ["0日0"],
+      "hex": "653a31626fe8ec02c18b944822ec76593b04b49690ea2beaadded5d877c540d8"
+    },
+    {
+      "salt": "ß😀​日\u0000|: 0-",
+      "parts": ["ß😀本é本 \u0000/=%a-"],
+      "hex": "f1e245279ae36eba5777093fd5bae1d22c55427db026d236c367265f961f1adf"
+    },
+    {
+      "salt": "日=%​-:Z本日0日ß😀ß \u0000%本/_/",
+      "parts": ["0😀ß/_日ß \u0000|\u0000", "本/_日_日:", "_|:😀:/本é0 a|0", "ßZ0/\u0000"],
+      "hex": "6c2f1cd3d70fb508b6cf9d3fcb5fc32d2eca5d18254aab563e8ca4b94f98e3cd"
+    },
+    {
+      "salt": "0 _-0😀​-ß%\u0000日:",
+      "parts": ["😀: a \u0000-本", "ßZß-本日本%_/a-本%0", "\u0000 \u0000é_éß ​", "​éß|=/a|ß日=%_%_-"],
+      "hex": "f729250cfbd9f0bb7db2c0a2c898dce98f381d3106bb0f28008f258a599add6d"
+    },
+    {
+      "salt": "/=|​日",
+      "parts": ["​%​Z0|:%​日​Z", "日\u0000Z=😀= 本-本 ​%=-"],
+      "hex": "8daa5a6cf5ddf596243ad09f4b6a0ded1a8a3734a9ddf861919f89a012430c7e"
+    },
+    {
+      "salt": "日:/本Z=/",
+      "parts": ["a%ß|_Z"],
+      "hex": "5ea81c42ef67b14e5021a1151338a2bca28b941580515d819e592c034d9e11df"
+    },
+    {
+      "salt": "-\u0000|\u0000|a日=|本-:éß|本/\u0000/ß",
+      "parts": [
+        " 本😀\u0000日ß%​😀:",
+        "=-本-:%:é本-​é_😀=😀",
+        "-0/aZ0-​",
+        "=Z:é:Z\u0000/:|ßé_/\u0000%"
+      ],
+      "hex": "17398c478dab8a043436278412b022b586ee9e79c2ba7a0065b51044adb532bf"
+    },
+    {
+      "salt": "-0 =%a😀​-=/=éß😀_é​😀​日_/0",
+      "parts": ["Z:日0😀0-ß😀=😀​ _Z="],
+      "hex": "612e3fcb794776e6484980b6d19962228548001a805363434500012fbb8aa4a5"
+    },
+    {
+      "salt": "​é:é0é",
+      "parts": [],
+      "hex": "58b2fd29ba4b8d8319f3da30993484aec885fa745eda2792d1539fa210451fe4"
+    },
+    {
+      "salt": "本%ß😀:日\u0000/_😀= _%0-\u0000Z本|ßZ",
+      "parts": ["ß ßZ\u0000 本😀:%_/ß", "_日ß%", "😀=日本Z=😀:"],
+      "hex": "6b22f1a1037dfe5737aeb59f7cffd94f3eec6437ab6e2a78091659880109483b"
+    },
+    {
+      "salt": "_日\u0000%ß-_é​é: =-本|0-=",
+      "parts": ["é本é0Z_😀本Z\u0000😀​-ß", "\u0000-", "%_Z_/a/:Z:é=%aé", "Zß ​|=-:|=Z=😀"],
+      "hex": "bee72a1d5392acac38390e903d697b08a3951210c7d112909bcfad448e920fd0"
+    },
+    {
+      "salt": "日0日ß日本%=Z=%\u0000é\u0000",
+      "parts": ["😀_😀\u0000-=-=%​Z=é"],
+      "hex": "2760a94feb8481ed451eeca77938ec40c0a6629c8740fa98672ed8dce8e2837b"
+    },
+    {
+      "salt": "%=/a 0é本日:日本日ßé=%_日​/=%ß",
+      "parts": [""],
+      "hex": "cf3264144d069ece81b41b9ee24264c237de65a997e76419dc415408ae5f484b"
+    },
+    {
+      "salt": "0-=😀_/",
+      "parts": ["\u0000 =Zß|= aZ本"],
+      "hex": "c34940fbb33fd74ceb18abe52d07388ac2bacca98f01aa1450c7e5ad22501a18"
+    },
+    {
+      "salt": "_-",
+      "parts": ["0|0|= :Z", "日\u0000-\u0000日ß/0 a :日aZ", "😀aZ​ 0%本/\u0000-本😀​日", " 0 ß😀_"],
+      "hex": "50e66125b0f849dadbb95542d6bc724ae8393f867dbdba80ca099c3877749cc4"
+    },
+    {
+      "salt": "_é:é\u0000éa ​😀0%0 ß 0é",
+      "parts": [],
+      "hex": "74bd87807d827501d1ead44e072771cdd4fea301216f98351fbf33b1f305ac8d"
+    },
+    {
+      "salt": "​%aé​-\u0000|本-",
+      "parts": ["=😀​-本-\u0000/="],
+      "hex": "d853d261db95c940daedb2f7399f0d8baea30a8a2d3c65cd022689b9ed44d36f"
+    },
+    {
+      "salt": "\u0000é:%ß|0Z=日ß%本Z0 ​%a",
+      "parts": [],
+      "hex": "dd0a3ba25db72f86eb3323765ed3af945c8d6ffc826765ac84f5a858bcdd3c6e"
+    },
+    {
+      "salt": "éa/_é\u0000|​|0Z_%:",
+      "parts": ["é\u0000-_Z本/本-a 0", "_-ß😀:%_", "0é本/a/\u0000😀_"],
+      "hex": "daea4b5cbc9f720305c42d8cf6ecef4131c261639254cc6cfdd8248befc27c06"
+    },
+    {
+      "salt": "ß \u0000日",
+      "parts": ["​日​%\u0000 a%ß%0", "本日"],
+      "hex": "b358a1ad6fa6cb0a4e5076c60fa42ae1d54f495c4c3b541d8fb082d4cbee71a4"
+    },
+    {
+      "salt": "-本é=-=|",
+      "parts": ["本 本é​éß%:|"],
+      "hex": "c344a6d5c15eb04cd6e7a829011de56d565ebe72ddc87b7672ae3aedf2f1cbac"
+    },
+    {
+      "salt": "/本日=é\u0000éa",
+      "parts": ["日0é\u0000", "a|​/\u0000-0-\u0000|a%_ \u0000😀"],
+      "hex": "5496340f77c08021322268d0d9a77e83943af360cf87aa4610f34cc36902fd17"
+    },
+    {
+      "salt": " 0😀ß-\u0000 _ \u0000Z\u0000日​-0Z0-0/a",
+      "parts": ["/本-aé", "%= "],
+      "hex": "f6dd65d973151a8ee74c6dc89d6144874b045402ee87362dc49fa0cea01ea86d"
+    },
+    {
+      "salt": "/aZßZ_日\u0000|0Z​😀:😀",
+      "parts": [],
+      "hex": "a955b2d3cc68bec9597e9e6880e5387e8c3ad1ebe032bfc4c1c1235a93ace446"
+    }
+  ],
+  "dailySalts": [
+    {
+      "salt": "本/​ ß日_😀\u0000/a日本|ßZ\u0000😀​/",
+      "day": "2026-12-07",
+      "hex": "1e9cdf8d408123dfe11a9af44205a92a300b595b133b75a75964ef5231364885"
+    },
+    {
+      "salt": "​日​%\u0000é:|ßé",
+      "day": "2028-02-21",
+      "hex": "a9850f8827af63900250a53c18e97232f42aa2c4709fa37fb4cbc872de15bfe3"
+    },
+    {
+      "salt": "本😀:Z本/0|_é: _日本😀=/=/_ ",
+      "day": "2026-04-15",
+      "hex": "fee8c60d311bb5be881822f9371e6eb81458c4717b5167b7c88b9a6c1a3b12ba"
+    },
+    {
+      "salt": "=/​|:%:Z\u0000Z=|=-:日0日_",
+      "day": "2027-09-24",
+      "hex": "1b8b092195b862e1371de7e65534a5b4fe199b34c76400dfb65cf8877bb1c748"
+    },
+    {
+      "salt": "-​-aé​",
+      "day": "2029-07-06",
+      "hex": "d08fcef1fbda0a7ebb6c7f1d00fd878c76154e3ec7877f072585173f7ffcf31f"
+    },
+    {
+      "salt": "日​/_日",
+      "day": "2028-06-09",
+      "hex": "4cdd6139fd719aaee930fc0bd9d51e6a30a408e137d69ec507de3891d76e70db"
+    },
+    {
+      "salt": ":😀a/=-a日:%=%​ 本|ß",
+      "day": "2027-01-24",
+      "hex": "87d16243c5ef94a416c3787ba5dc224777c26b13a74c7d5b7e9fef8cf4718555"
+    },
+    {
+      "salt": "|_é",
+      "day": "2028-02-09",
+      "hex": "9df0c8c455333c3b8a134e00d5651fa13966fee421cac56c6dbe0b6fab841fb1"
+    },
+    {
+      "salt": "\u0000é\u0000|\u0000Z0/ßé=日\u0000",
+      "day": "2027-05-12",
+      "hex": "67f8ffd186f610122b1394c8487ac64df982b439d6d638ca2a29ad72d62f042e"
+    },
+    {
+      "salt": "é0|​ a日​ 本 a日=Z\u0000é",
+      "day": "2026-08-27",
+      "hex": "b304d942d574cb62dc6e88dbf9c79b6f0b8aaa9509216d82b147e4664c47a176"
+    },
+    {
+      "salt": "=日本😀\u0000|\u0000-_😀本日​日_Z_-​日​Z",
+      "day": "2028-02-05",
+      "hex": "51064ca1d1a96aaa90d4e81cef0e26192124c596628c21c66f040700771922a9"
+    },
+    {
+      "salt": "0😀\u0000日_日0-:日: _|",
+      "day": "2026-04-27",
+      "hex": "0b3964e0cfe0fb01e137245df170a6113fe78ad8fd7115ac73972ff5c6958230"
+    },
+    {
+      "salt": "_%:/= 本😀=Z_%0-\u0000/​|=é_é",
+      "day": "2028-02-25",
+      "hex": "a69793e7fe5c36b28aa4718fdd510d2e26a6bc59ec43c2aba038535268109346"
+    },
+    {
+      "salt": "",
+      "day": "2028-02-01",
+      "hex": "a98382ba2fc2f553bf56fc11cc323ff566c0be878b558ef96219e14b67c28bf7"
+    },
+    {
+      "salt": "=Z:%=Zaéa日: 本",
+      "day": "2027-01-08",
+      "hex": "b80cfc0c421a2a705de604d5ed1a7878e373f88ec7b8d7247f77f8b72933fb15"
+    },
+    {
+      "salt": "%​",
+      "day": "2029-03-02",
+      "hex": "b603cb6041698138e65669ef37f3a7fed46092104cbc38bd9bcda573e1997f18"
+    }
+  ],
+  "dailyVisitors": [
+    {
+      "day": "2026-08-03",
+      "ip": "198.51.100.9",
+      "salt": "本-:",
+      "userAgent": "Example-Agent/1.0 (example.test)",
+      "anonymousId": "7cf28d9a8421dbc5ae8996c2c99583abc44069ae918f57b935e82e64fa1fb556"
+    },
+    {
+      "day": "2027-05-24",
+      "ip": "192.0.2.77",
+      "salt": " :é=-",
+      "userAgent": "curl/8",
+      "anonymousId": "eb6efb6ad84fe9378426e6da88c948072dc8178b29e56b30737b9050bddab1a4"
+    },
+    {
+      "day": "2026-08-19",
+      "ip": "2001:db8::1",
+      "salt": "0Z",
+      "userAgent": "",
+      "anonymousId": "cd62c14d359c387a2382d72c5e31463a236bec93aed51671fdbf152a96b85c52"
+    },
+    {
+      "day": "2028-10-25",
+      "ip": "2001:db8::1",
+      "salt": "_|=|​-\u0000日= 本😀=😀本%",
+      "userAgent": null,
+      "anonymousId": "031b7c407a558c9fdb804d5f680df3cde8ec503990dfe3c231abe222607f6ab8"
+    },
+    {
+      "day": "2029-07-02",
+      "ip": "192.0.2.77",
+      "salt": "%​-0Z本Z本",
+      "userAgent": "Mozilla/5.0 test",
+      "anonymousId": "31c4fc95163117480d0998897b7b478cba20ba55908e44fd03f6f27f3aec4ce2"
+    },
+    {
+      "day": "2029-11-10",
+      "ip": "192.0.2.77",
+      "salt": "-:",
+      "userAgent": "Example-Agent/1.0 (example.test)",
+      "anonymousId": "ca12bb3757feddbc599cf139f40771004d7ce396cb2a70f56289d69bfd9b1da8"
+    },
+    {
+      "day": "2027-09-24",
+      "ip": "192.0.2.77",
+      "salt": "-本",
+      "userAgent": "Mozilla/5.0 test",
+      "anonymousId": "75a3ac9b11f8907e3e272d799c415064ab53dacae8e22939b0a149195e76da23"
+    },
+    {
+      "day": "2029-07-06",
+      "ip": "203.0.113.254",
+      "salt": "|",
+      "userAgent": null,
+      "anonymousId": "efa0179bbbba78f84032bd97fc2f159ed467f7337105a4b69f50ba5ebbd5052d"
+    },
+    {
+      "day": "2029-03-18",
+      "ip": "192.0.2.77",
+      "salt": "-: :日\u0000 ß ßéßé0",
+      "userAgent": "Example-Agent/1.0 (example.test)",
+      "anonymousId": "7b2c269a53892bcd0395afc76282d97a9758aef685bacfeb1c2f1cf127e10f97"
+    },
+    {
+      "day": "2027-05-24",
+      "ip": "203.0.113.254",
+      "salt": "😀_Z​-=%_Z本é:é0Z本Z=",
+      "userAgent": "Mozilla/5.0 test",
+      "anonymousId": "38e6cca643f891f35cd9d5d682ba632aa01ec889b3248a75c561076fb67e3f2f"
+    },
+    {
+      "day": "2029-03-06",
+      "ip": null,
+      "salt": "aZß|\u0000Zß%0",
+      "userAgent": "Mozilla/5.0 test",
+      "anonymousId": "79a52f60a8fffe056aa8be89c9e9bf99bbd83bbb90a0cccc6863b7d71231509f"
+    },
+    {
+      "day": "2029-03-06",
+      "ip": "192.0.2.77",
+      "salt": "/ß😀:日a|a%a日_日=-_%",
+      "userAgent": "",
+      "anonymousId": "ea8beb73e32406032f837090d73a2cc583efcdfd4f269d26f1dd6ad5f7bbe72e"
+    },
+    {
+      "day": "2028-02-09",
+      "ip": "203.0.113.1",
+      "salt": "\u0000%本-本|​日_|",
+      "userAgent": null,
+      "anonymousId": "b027a56ac9141f50f84afd33289925c943d97325600fa1df129c30aae2fbb322"
+    },
+    {
+      "day": "2027-09-12",
+      "ip": "203.0.113.254",
+      "salt": "/\u0000Z",
+      "userAgent": "",
+      "anonymousId": "f03ffd1460214c435534d9ab705dfaefc41559a34eca3c245d8b2af34ad533d6"
+    },
+    {
+      "day": "2028-02-05",
+      "ip": null,
+      "salt": "é:|​Za",
+      "userAgent": "Example-Agent/1.0 (example.test)",
+      "anonymousId": "846dc34d120aec0a7a7221d10d057972e48aed0873556048a47e66fa63e3168f"
+    },
+    {
+      "day": "2027-09-28",
+      "ip": "203.0.113.254",
+      "salt": "|ß-本Z=-本é_é:%​é=%​é:é本",
+      "userAgent": "Mozilla/5.0 test",
+      "anonymousId": "e0f37511e469b36ee247210a87a7e39991f84de2ec1d6641c3bb555c4fd90780"
+    },
+    {
+      "day": "2029-03-02",
+      "ip": "203.0.113.254",
+      "salt": " =/=|aé",
+      "userAgent": "curl/8",
+      "anonymousId": "7931ff34fc5003c37479ad1a778f9e30a8ff10edc24a382cb8bf199352674921"
+    },
+    {
+      "day": "2026-04-27",
+      "ip": "2001:db8::1",
+      "salt": "\u0000-",
+      "userAgent": "",
+      "anonymousId": "2be9675d1871851e813fa39f636b47420a5a2015cae022b3c39e01fbbbcb0fc2"
+    },
+    {
+      "day": "2028-10-13",
+      "ip": "198.51.100.9",
+      "salt": ":-a",
+      "userAgent": "Mozilla/5.0 test",
+      "anonymousId": "83fc79e5299036e8a1b23e987006b6e7113be13ef7d53df995f7074594d38f0c"
+    },
+    {
+      "day": "2029-11-18",
+      "ip": null,
+      "salt": "=日",
+      "userAgent": "",
+      "anonymousId": "4ce33fd5fc86248f22d478a1128bcf08c318f331449962e634b3062954f68435"
+    },
+    {
+      "day": "2028-10-13",
+      "ip": "203.0.113.1",
+      "salt": "=|\u0000|0/:Za😀a日0|本",
+      "userAgent": "Mozilla/5.0 test",
+      "anonymousId": "7f33101ffebe1b83f7e2a44e2de45c72c48658f47888b455cd98ce8dea0ca3fc"
+    },
+    {
+      "day": "2029-03-06",
+      "ip": "2001:db8:85a3::8a2e:370:7334",
+      "salt": "日",
+      "userAgent": null,
+      "anonymousId": "98cf72c12e4ad12f9da084c553d6693b1b7b9c9b10689b026193082156bda8fe"
+    },
+    {
+      "day": "2029-07-06",
+      "ip": "192.0.2.77",
+      "salt": "|本日​%a%a-本-ß😀=日\u0000😀ßé\u0000-",
+      "userAgent": "",
+      "anonymousId": "827aa0d0b05ff9ea1fdb4a91a0eade6d4404b1b224fe50435556b07e6794c1cb"
+    },
+    {
+      "day": "2028-02-25",
+      "ip": "198.51.100.9",
+      "salt": "\u0000日\u0000|​Z​😀=😀0/=é",
+      "userAgent": "curl/8",
+      "anonymousId": "3f4b72412fcf411701f3682986546dca0d3ff709a515043282eba29de3e9df2d"
+    }
+  ],
+  "dailyIpHashes": [
+    {
+      "salt": "Za ​é​-​Z_ ß|ß日:",
+      "day": "2029-03-22",
+      "ip": "203.0.113.1",
+      "hex": "13d6a614ae9e14db2d7f64737aa35c451f1997a501dbb87ecaed5a43b1557277"
+    },
+    {
+      "salt": "ß日=/ßé本%: =éß😀_😀_é=%ß ​|",
+      "day": "2028-06-09",
+      "ip": "203.0.113.254",
+      "hex": "b510ec43366ad683f9e2754c90d5269822793186877ea335bc712a4f367bb7ec"
+    },
+    {
+      "salt": "日ßé=|a|_Zß日0😀ß日:|ßZa-",
+      "day": "2026-12-07",
+      "ip": "2001:db8:85a3::8a2e:370:7334",
+      "hex": "654c2b0e754082b49487197302290513d04dba63d9a1027eb6decc8870a3c860"
+    },
+    {
+      "salt": "|​-ß/​日\u0000éß日",
+      "day": "2026-08-23",
+      "ip": "203.0.113.254",
+      "hex": "dd9c0dba46397d05c3284850f2cf3d02d1078f69b4682db5a6e6dd62ab765133"
+    },
+    {
+      "salt": "",
+      "day": "2029-07-10",
+      "ip": "203.0.113.1",
+      "hex": "bab0bbd83faf6ca9dd3458761996dfca178aceb8430b4fa6a766505ed3693e61"
+    },
+    {
+      "salt": "​-a😀本|:😀ßZ: 0Z",
+      "day": "2026-04-27",
+      "ip": "203.0.113.254",
+      "hex": "22b7e4e19a716fec905aef616f5555226296281086f8e34e7b38ab2755fc9d64"
+    },
+    {
+      "salt": "日\u0000|​-=/ß|ßZ",
+      "day": "2026-04-07",
+      "ip": "2001:db8:85a3::8a2e:370:7334",
+      "hex": "e9efb08670e48af49b7be9300cd6a1e35b69b398fcab9f84225a4358ab5a5b60"
+    },
+    {
+      "salt": "|:/\u0000%:-a 本Zß日_|ßZ:%",
+      "day": "2026-12-11",
+      "ip": "192.0.2.77",
+      "hex": "de513cb3f575ca85084122aea5abb0e35e3b43bfe65eab96a59101bd8303b2e7"
+    },
+    {
+      "salt": " a/",
+      "day": "2026-08-23",
+      "ip": "192.0.2.77",
+      "hex": "40f693ed3216c679a356697cac3fa5ca0959ea1f789e8b47db547027393efd54"
+    },
+    {
+      "salt": "Z_日0|0/本|",
+      "day": "2028-10-05",
+      "ip": "203.0.113.254",
+      "hex": "a98d4279e8162b9ad7b81d0494b9271fc758d291f66429a6f7b6bd905e19b083"
+    },
+    {
+      "salt": "éß/_é",
+      "day": "2026-12-27",
+      "ip": "203.0.113.254",
+      "hex": "49fa08c3016e7caa9588b6e50d97f0171e8c3bdb07872267ba089322b1a13df9"
+    },
+    {
+      "salt": "",
+      "day": "2029-11-22",
+      "ip": "203.0.113.1",
+      "hex": "c783c3ab0d508d13f37265cea7019fa4c0428525d0677e3ffb5e2b19627fdb9b"
+    },
+    {
+      "salt": "ß",
+      "day": "2027-09-20",
+      "ip": "203.0.113.1",
+      "hex": "6113023c608229a84b2716b03d3147e164339a968fd831edd8a94f8410234533"
+    },
+    {
+      "salt": "本|\u0000|本",
+      "day": "2029-11-14",
+      "ip": "2001:db8::1",
+      "hex": "a79e2c15f123f2f8c99047989c06b00adb4484de7560018dce80097565650aec"
+    },
+    {
+      "salt": ":é​ ß-\u0000-\u0000é本日\u0000%ß",
+      "day": "2029-03-10",
+      "ip": "198.51.100.9",
+      "hex": "4136e799b2f189ec2915f18e2eda720dcb32e0f51643758312ae46ae62e2ad13"
+    },
+    {
+      "salt": "ßé_é​/​ ​Z0",
+      "day": "2029-07-02",
+      "ip": "198.51.100.9",
+      "hex": "96a5eb8481c7f160eb7beda4f73a45298d0cde918aa258762bcf1eeadaadbee7"
+    }
+  ]
+}

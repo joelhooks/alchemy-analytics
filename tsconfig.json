@@ -22,7 +22,7 @@
         "allowedUnstableApis": [
           "effect/Arbitrary",
           "@effect/vitest",
-          "effect/Crypto",
+          "effect/crypto/Digest",
           "effect/http/FetchHttpClient",
           "effect/http/HttpClient",
           "effect/http/HttpClientError",

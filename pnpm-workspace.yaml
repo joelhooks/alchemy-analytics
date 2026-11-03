@@ -2,12 +2,21 @@ allowBuilds:
   workerd: false
 
 minimumReleaseAgeExclude:
-  - alchemy@2.0.0-beta.83
-  - effect@4.0.0
-  - "@effect/vitest@4.0.0"
-  - "@effect/platform-node@4.0.0"
-  - "@effect/platform-node-shared@4.0.0"
-  - "@alchemy.run/cloudflare-runtime@2.0.0-beta.83"
-  - "@alchemy.run/node-utils@2.0.0-beta.83"
-  - "@distilled.cloud/cloudflare@1.0.0-rc.15"
-  - "@distilled.cloud/core@1.0.0-rc.15"
+  - alchemy@2.0.0-beta.85
+  - effect@4.1.2
+  - "@effect/vitest@4.1.2"
+  - "@effect/platform-node@4.1.2"
+  - "@effect/platform-node-shared@4.1.2"
+  - "@effect/sql-d1@4.1.2"
+  - "@alchemy.run/acme@2.0.0-beta.85"
+  - "@alchemy.run/cloudflare@2.0.0-beta.85"
+  - "@alchemy.run/cloudflare-runtime@2.0.0-beta.85"
+  - "@alchemy.run/docker@2.0.0-beta.85"
+  - "@alchemy.run/node-utils@2.0.0-beta.85"
+  - "@alchemy.run/sql@2.0.0-beta.85"
+  - "@distilled.cloud/acme@1.0.0-rc.18"
+  - "@distilled.cloud/aws@1.0.0-rc.18"
+  - "@distilled.cloud/aws4signer@1.0.0-rc.18"
+  - "@distilled.cloud/cloudflare@1.0.0-rc.18"
+  - "@distilled.cloud/core@1.0.0-rc.18"
+  - "@distilled.cloud/iceberg@1.0.0-rc.18"
