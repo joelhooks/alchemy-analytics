@@ -11,10 +11,10 @@ Capture never changes a response or a caller's result. A broken sink is logged a
 ```sh
 pnpm add alchemy-analytics effect@4.0.6
 # Workers that declare infrastructure also need Alchemy:
-pnpm add alchemy@2.0.0-beta.83
+pnpm add alchemy@2.0.0-beta.84 @alchemy.run/cloudflare@2.0.0-beta.84
 ```
 
-Effect is a peer dependency, any `4.0.x` (`>=4.0.0 <4.1.0`), so your app and this package share one runtime. Alchemy is an optional peer. Only `alchemy-analytics/basin` imports it.
+Effect is a peer dependency, any `4.0.x` (`>=4.0.0 <4.1.0`), so your app and this package share one runtime. Alchemy and `@alchemy.run/cloudflare` are optional peers. Only `alchemy-analytics/basin` imports them.
 
 Until a release is on npm, install from GitHub: `pnpm add github:joelhooks/alchemy-analytics`. The `prepare` script builds `dist`.
 
@@ -33,7 +33,7 @@ Until a release is on npm, install from GitHub: `pnpm add github:joelhooks/alche
 ```ts
 import { withEventCapture } from "alchemy-analytics";
 import { Basin } from "alchemy-analytics/basin";
-import * as Cloudflare from "alchemy/Cloudflare";
+import * as Cloudflare from "@alchemy.run/cloudflare";
 import { Effect, Layer } from "effect";
 
 const inBackground = (effect: Effect.Effect<void>) =>
