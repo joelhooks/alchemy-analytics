@@ -9,12 +9,12 @@ Capture never changes a response or a caller's result. A broken sink is logged a
 ## Install
 
 ```sh
-pnpm add alchemy-analytics effect@4.1.2
+pnpm add alchemy-analytics effect@4.1.4
 # Workers that declare infrastructure also need Alchemy:
-pnpm add alchemy@2.0.0-beta.85 @alchemy.run/cloudflare@2.0.0-beta.85
+pnpm add alchemy@2.0.0-beta.87 @alchemy.run/cloudflare@2.0.0-beta.87
 ```
 
-Effect is a peer dependency, `>=4.1.2 <4.2.0`, so your app and this package share one runtime. Alchemy and `@alchemy.run/cloudflare` are optional peers. Only `alchemy-analytics/basin` imports them.
+Effect is a peer dependency, `>=4.1.4 <4.2.0`, so your app and this package share one runtime. Alchemy and `@alchemy.run/cloudflare` are optional peers. Only `alchemy-analytics/basin` imports them.
 
 Until a release is on npm, install from GitHub: `pnpm add github:joelhooks/alchemy-analytics`. The `prepare` script builds `dist`.
 
